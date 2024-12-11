@@ -98,7 +98,7 @@ const PixelsPage = () => {
       }
 
       const imageWidth = image.width;
-      const imageHeight = image.height;
+      const imageHeight = image.height ;
       const cellWidth = 10;
       const cellHeight = 10;
 
@@ -113,7 +113,7 @@ const PixelsPage = () => {
 
         const canvas = document.createElement("canvas");
         canvas.width = cellWidth;
-        canvas.height = cellHeight;
+        canvas.height = cellHeight + 6;
         const ctx = canvas.getContext("2d");
 
         if (ctx) {
