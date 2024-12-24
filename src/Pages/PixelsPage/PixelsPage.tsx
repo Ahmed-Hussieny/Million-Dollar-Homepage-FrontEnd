@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import './PixelsPage.css';
-type LogoPixel = {
-    pixelNumber: number;
-    smallImage: string;
-    logoLink: string;
-    title: string;
-  };
-  
+import { LogoEntry } from '../../interfaces';
+import {getLogos } from '../../Store/LogosSlices';
+import { useAppDispatch } from '../../Store/store';
   type SelectedCell = {
     cellId: number;
     canvasData: string;
   };
 const PixelsPage = () => {
-    const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
+  const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  const [urlPay, setUrlPay] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -23,38 +19,38 @@ const PixelsPage = () => {
     logoLink: "",
   });
 
-  const totalCells = 10000; // 100x100 grid
-
+  const totalCells = 10000;
+    const dispatch = useAppDispatch();
+  
   useEffect(() => {
     fetchData();
   }, []);
-
-  const fetchData = () => {
-    fetch("http://localhost:3000/logo/getLogos")
-      .then((response) => response.json())
-      .then((data) => {
-        data.logos?.forEach((entry: { pixels: LogoPixel[] , logoLink:string}) => {
-          entry?.pixels?.forEach((cell) => {
-            const cellElement = document.querySelector(
-              `[data-id="${cell.pixelNumber}"]`
-            ) as HTMLDivElement;
-            if (cellElement) {
-              const canvas = document.createElement("canvas");
-              const ctx = canvas.getContext("2d");
-              const img = new Image();
-              img.src = cell.smallImage;
-              img.onload = () => ctx?.drawImage(img, 0, 0);
-              cellElement.innerHTML = "";
-              cellElement.appendChild(canvas);
-              cellElement.style.backgroundColor = "transparent";
-              cellElement.title = entry.logoLink; // Tooltip
-              cellElement.onclick = () => window.open(entry.logoLink, "_blank"); // Navigate to link
-            }
+  const navigateToPay = () => {
+    console.log(urlPay)
+    if(urlPay) window.location.href = urlPay;
+  }
+  const fetchData = async() => {
+      const {logos} = await dispatch(getLogos()).unwrap();
+      logos?.forEach((entry: LogoEntry) => {
+            entry?.pixels?.forEach((cell) => {
+              const cellElement = document.querySelector(
+                `[data-id="${cell.pixelNumber}"]`
+              ) as HTMLDivElement;
+              if (cellElement) {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const img = new Image();
+                img.src = cell.smallImage;
+                img.onload = () => ctx?.drawImage(img, 0, 0);
+                cellElement.innerHTML = "";
+                cellElement.appendChild(canvas);
+                cellElement.style.backgroundColor = "transparent";
+                cellElement.title = entry.logoLink; // Tooltip
+                cellElement.onclick = () => window.open(entry.logoLink, "_blank"); // Navigate to link
+              }
+            });
           });
-        });
-      })
-      .catch((error) => console.error(error));
-  };
+    };
 
   const toggleCellSelection = (cell: HTMLDivElement) => {
     setSelectedCells((prev) => {
@@ -113,7 +109,7 @@ const PixelsPage = () => {
 
         const canvas = document.createElement("canvas");
         canvas.width = cellWidth;
-        canvas.height = cellHeight + 6;
+        canvas.height = cellHeight;
         const ctx = canvas.getContext("2d");
 
         if (ctx) {
@@ -150,13 +146,19 @@ const PixelsPage = () => {
         apiData.append(`selectedCells[${index}][cellId]`, item.cellId.toString());
         apiData.append(`selectedCells[${index}][canvasData]`, item.canvasData);
       });
-
+      console.log(apiData);
       fetch("http://localhost:3000/logo/addLogo", {
         method: "POST",
         body: apiData,
       })
         .then((response) => response.json())
-        .then((data) => console.log(data))
+        .then((data) => {
+          if(data.paymentLink){
+            // window.location.href = data.paymentLink;
+            setUrlPay(data.paymentLink);
+          }
+          console.log(data)
+        })
         .catch((error) => console.error(error));
 
       setSelectedCells([]);
@@ -166,13 +168,92 @@ const PixelsPage = () => {
   return (
     <div className='cot'>
         <div >
-    <h1>Million Dollar Homepage</h1>
-    <p>
-      Click on multiple squares to select them, and upload an image to divide
-      and place it across them.
-    </p>
 
     
+
+    
+
+        <form className="form-container">
+  <label className="form-label text-warning">
+    قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء
+  </label>
+  <div className="row">
+    <div className="col-md-6">
+      <input
+        type="text"
+        name="title"
+        className="form-control"
+        placeholder="Title"
+        value={formData.title}
+        onChange={handleInputChange}
+      />
+    </div>
+    <div className="col-md-6">
+      <textarea
+        name="description"
+        className="form-control"
+        placeholder="Description"
+        value={formData.description}
+        onChange={handleInputChange}
+      />
+    </div>
+  </div>
+  <div className="row my-3">
+    <div className="col-md-6">
+      <input
+        type="number"
+        name="rows"
+        className="form-control"
+        placeholder="Rows"
+        value={formData.rows}
+        onChange={handleInputChange}
+      />
+    </div>
+    <div className="col-md-6">
+      <input
+        type="number"
+        name="cols"
+        className="form-control"
+        placeholder="Columns"
+        value={formData.cols}
+        onChange={handleInputChange}
+      />
+    </div>
+  </div>
+  <div className="row">
+    <div className="col-md-6">
+      <input
+        type="text"
+        name="logoLink"
+        className="form-control"
+        placeholder="Logo Link"
+        value={formData.logoLink}
+        onChange={handleInputChange}
+      />
+    </div>
+    <div className="col-md-6">
+    <div className="upload-button mt-2 w-100">
+      <label htmlFor="file-upload" className="upload-button">
+        Upload Logo
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+    </div>
+    </div>
+    
+  </div>
+</form>
+    
+    <div>
+          <button className='btn btn-primary w-25 my-2 p-0' type='button' onClick={()=>navigateToPay()} disabled={urlPay==""}>Pay</button>
+
+    </div>
 
     <div className="canvas-container">
       {Array.from({ length: totalCells }, (_, i) => (
@@ -183,61 +264,6 @@ const PixelsPage = () => {
           onClick={(e) => toggleCellSelection(e.currentTarget)}
         ></div>
       ))}
-    </div>
-
-    <form className="form-container">
-      <input
-        type="text"
-        name="title"
-        className='form-control col-md-6'
-        placeholder="Title"
-        value={formData.title}
-        onChange={handleInputChange}
-      />
-      <textarea
-        name="description"
-        className='form-control'
-        placeholder="Description"
-        value={formData.description}
-        onChange={handleInputChange}
-      />
-      <input
-        type="number"
-        name="rows"
-        className='form-control'
-        placeholder="Rows"
-        value={formData.rows}
-        onChange={handleInputChange}
-      />
-      <input
-        type="number"
-        name="cols"
-        className='form-control'
-        placeholder="Columns"
-        value={formData.cols}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="logoLink"
-        className='form-control'
-        placeholder="Logo Link"
-        value={formData.logoLink}
-        onChange={handleInputChange}
-      />
-    </form>
-    <div className="upload-button">
-      <label htmlFor="file-upload" className="upload-button">
-        Upload Image
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept="image/*"
-        onChange={handleFileChange}
-      />
     </div>
   </div>
     </div>

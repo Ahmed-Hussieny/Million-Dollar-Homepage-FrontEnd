@@ -1,10 +1,9 @@
+
 .canvas-container {
     display: grid;
-    grid-template-columns: repeat(100, 10px); /* 100 columns of 10px */
-    grid-template-rows: repeat(100, 10px); /* 100 rows of 10px */
-    gap: 1px;
+    grid-template-columns: repeat(100, 10px); 
+    grid-template-rows: repeat(100, 10px); 
     border: black solid 1px;
-    margin-top: 20px;
     justify-content: center;
   }
   
@@ -12,22 +11,41 @@
     width: 10px;
     height: 10px;
     background-color: #ffffff;
+    border: rgb(238, 236, 236) solid 0.5px;
     cursor: pointer;
     position: relative;
   }
-  
+  div[style] {
+    border: 0;
+  }
   .cell img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensure the image covers the whole cell */
+    object-fit: cover;
+  }
+  .upload-button {
+    display: inline-block;
+    padding: 2px 20px;
+    background-color: #4caf50; /* Green background */
+    color: white; /* White text */
+    border: none;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
   }
   
-  .upload-button {
-    margin-top: 20px;
+  .upload-button:hover {
+    background-color: #45a049; /* Darker green on hover */
   }
-  .cont{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
+  
+  .upload-button:active {
+    transform: scale(0.95); /* Button press effect */
   }
+  
+  .hidden {
+    display: none; /* Hide the file input */
+  }
+  

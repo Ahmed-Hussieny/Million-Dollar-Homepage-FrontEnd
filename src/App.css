@@ -1,8 +1,19 @@
+@font-face {
+  font-family: 'inter';
+  src: url('../src/assets/Fonts/Cairo-VariableFont_slnt,wght.ttf');
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   text-align: center;
+}
+.dot{
+  background-color: #d8ca04;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  display: inline-block;
 }
 .logo {
   height: 6em;
@@ -17,36 +28,9 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 body {
-  font-family: Arial, sans-serif;
+  font-family: inter, sans-serif !important;
   text-align: center;
-}
-
-.canvas-container {
-  display: grid;
-  grid-template-columns: repeat(100, 10px); /* 100 columns of 10px */
-  grid-template-rows: repeat(100, 10px); /* 100 rows of 10px */
-  /* gap: 1px; */
-  background: #d8d6d6;
-  margin-top: 20px;
-  justify-content: center;
-}
-
-.cell {
-  width: 10px;
-  height: 10px;
-  background-color: #ffffff;
-  cursor: pointer;
-  position: relative;
-}
-
-.cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensure the image covers the whole cell */
-}
-
-.upload-button {
-  margin-top: 20px;
+  box-sizing: border-box;
 }
 @keyframes logo-spin {
   from {
@@ -55,6 +39,9 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+.primary > span {
+  border-bottom: black 1px solid !important;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -69,4 +56,30 @@ body {
 
 .read-the-docs {
   color: #888;
+}
+
+
+.about-us-page {
+  font-family: "Arial", sans-serif;
+}
+
+header {
+  background: linear-gradient(135deg, #ffea70, #f9d835);
+  color: #333;
+}
+
+.card {
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+footer {
+  background-color: #f9d835;
 }
