@@ -8,10 +8,10 @@ const ShowPixels = () => {
   const totalCells = 10000;
   const dispatch = useAppDispatch();
   const [numberOfPixels, setNumberOfPixels] = useState(0);
+  
   useEffect(() => {
     setNumberOfPixels(0);
     fetchData();
-    //^ render number of pixels in logos
     dispatch(changePixelNumber(numberOfPixels*10));
   }, []);
 
@@ -19,8 +19,6 @@ const ShowPixels = () => {
     const { logos } = await dispatch(getLogos()).unwrap();
     logos?.forEach((entry: LogoEntry) => {
       entry?.pixels?.forEach((cell) => {
-        // setNumberOfPixels(numberOfPixels + entry.pixels.length);
-        console.log(numberOfPixels)
         const cellElement = document.querySelector(
           `[data-id="${cell.pixelNumber}"]`
         ) as HTMLDivElement;
@@ -33,8 +31,8 @@ const ShowPixels = () => {
           cellElement.innerHTML = "";
           cellElement.appendChild(canvas);
           cellElement.style.backgroundColor = "transparent";
-          cellElement.title = entry.logoLink; // Tooltip
-          cellElement.onclick = () => window.open(entry.logoLink, "_blank"); // Navigate to link
+          cellElement.title = entry.title;
+          cellElement.onclick = () => window.open(entry.logoLink, "_blank"); 
         }
       });
     });

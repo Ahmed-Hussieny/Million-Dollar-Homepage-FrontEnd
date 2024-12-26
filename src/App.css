@@ -1,6 +1,18 @@
+:root {
+  --main-color:#eeb92b;
+}
 @font-face {
   font-family: 'inter';
   src: url('../src/assets/Fonts/Cairo-VariableFont_slnt,wght.ttf');
+}
+.mainColorBackground{
+  background-color: var(--main-color) !important;
+}
+.borderMaincolor{
+  border: var(--main-color) solid 1px !important;
+}
+.textMainColor{
+  color: var(--main-color) !important;
 }
 #root {
   max-width: 1280px;
@@ -9,7 +21,7 @@
   text-align: center;
 }
 .dot{
-  background-color: #d8ca04;
+  background-color: var(--main-color);
   border-radius: 50%;
   width: 10px;
   height: 10px;
@@ -31,6 +43,7 @@ body {
   font-family: inter, sans-serif !important;
   text-align: center;
   box-sizing: border-box;
+  /* background-color: #000000 !important; */
 }
 @keyframes logo-spin {
   from {
@@ -81,5 +94,5 @@ header {
 }
 
 footer {
-  background-color: #f9d835;
+  background-color: var(--main-color);
 }

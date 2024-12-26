@@ -7,14 +7,18 @@ import { Provider } from 'react-redux'
 import { Config } from './Store/store'
 import ContactUs from './Pages/ContactUs/ContactUs'
 import AboutUs from './Pages/AboutUs/AboutUs'
+import Login from './Pages/Login/Login'
+import ManageLogosWithoutPaying from './Pages/Admin/manageLogosWithoutPaying/manageLogosWithoutPaying'
 
 const App = () => {
   const router = createBrowserRouter([
+    {path:"/login", element:<Login/>},
     {path:"/", element:<Layout/>, children:[
       {path:"/buyPixel", element:<PixelsPage/>},
       {path:"/ContactUs", element:<ContactUs/>},
       {path:"/AboutUs", element:<AboutUs/>},
       {path:"/", element:<ShowPixels/>},
+      {path:"/ManageLogosWithoutPaying", element:<ManageLogosWithoutPaying/>},
     ],},
     
   ])

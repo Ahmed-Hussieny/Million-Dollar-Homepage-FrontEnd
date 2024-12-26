@@ -1,82 +1,72 @@
-import { useFormik } from 'formik';
-import { useState } from 'react';
-import * as Yup from 'yup';
-
+import { useEffect } from "react";
+import { getLogos } from "../../Store/LogosSlices";
+import { useAppDispatch } from "../../Store/store";
+import '../../App.css'
 const ContactUs = () => {
-    const [loading, setLoading] = useState(false);
-    const initialValues = {
-        name: '',
-        email: '',
-        message: '',
-      };
+  const goToWhatsApp = () => {
+    window.open(`https://wa.me/966500000000`, "_blank");
+  };
+  const goToTwitter = () => {
+    window.open(`https://x.com/onemillion_ar?s=11&t=GPLIYUu1K3J0AJE0KESWHw`, "_blank");
+  };
+  const goToTikTok = () => {
+    window.open(`https://www.tiktok.com/@onemillionpixels.arabic?is_from_webapp=1&sender_device=pc`, "_blank");
+  }
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    fetchData();
     
-      const validationSchema = Yup.object({
-        name: Yup.string()
-          .min(3, 'يجب أن يتكون الاسم من 3 أحرف على الأقل')
-          .required('الاسم مطلوب'),
-        email: Yup.string()
-          .email('عنوان البريد الإلكتروني غير صالح')
-          .required('البريد الإلكتروني مطلوب'),
-        message: Yup.string()
-          .min(10, 'يجب أن تكون الرسالة 10 أحرف على الأقل')
-          .required('الرسالة مطلوبة'),
-      });
-      const contactUsForm = useFormik({
-        initialValues,
-        validationSchema,
-        onSubmit:contactUsSubmit
-      })
-      async function contactUsSubmit(val: typeof initialValues){
-        console.log(val);
-        setLoading(true);
-      };
-    
-      return (
-        <div className="container mt-5 text-end" style={{direction:'rtl'}}>
-          <h2 className="text-center mb-4 text-warning">تواصل معنا </h2>
-          <form onSubmit={contactUsForm.handleSubmit} className='row'>
-          <div className='my-2 col-md-6'>
-        <label htmlFor="name">الاسم بالكامل :</label>
-        <input onChange={contactUsForm.handleChange} onKeyUp={contactUsForm.handleBlur} type="text" name="name" id="name" className='form-control my-2' />
-        {(contactUsForm.touched.name&& contactUsForm.errors.name)?
-        <div className='alert  px-2 alert-danger'>
-        <p className='p-0 m-0'>{contactUsForm.errors.name}</p>
-        </div>
-        :""}
-      </div>
+  }, []);
+  const fetchData = async () => {
+    await dispatch(getLogos()).unwrap();
+  };
+  return (
+    <div className="bg-light" style={{ direction: "rtl" }}>
+      <div className="container py-5">
+          <div className="row align-items-center mb-5">
+          <div className="col-md-6 text-center text-md-end" >
+              <h2 className="textMainColor">تواصل معنا</h2>
+              <p className="text-dark">
+              نحن هنا لمساعدتك والإجابة على جميع استفساراتك , اذا كان لديك أي أسئلة , اقتراحات او تحتاج الى دعم , لا تتردد في التواصل معنا من خلال الطرق التالية
+              </p>
+            </div>
+            <div className="col-md-6">
+              <img
+                src="https://via.placeholder.com/500x300"
+                alt="Our mission"
+                className="img-fluid rounded shadow"
+              />
+            </div>
+            
+          </div>
+          <div className="text-center mb-5">
+            <h2 className="textMainColor">معلومات التواصل</h2>
+            <p className="text-dark">
+            <strong>البريد الالكتروني:</strong>
+            <br/>
+            <a href="mailto:Onemillion.pixels.inarabic@gmail.com">Onemillion.pixels.inarabic@gmail.com</a>
+            <br/>
+            <strong>الواتساب:</strong>
+            <br/>
+            <a href='' onClick={goToWhatsApp}>+966500000000</a>
+            </p>
+          </div>
 
-      <div className='my-2 col-md-6'>
-        <label htmlFor="email">البريد الإلكتروني :</label>
-        <input onChange={contactUsForm.handleChange} onKeyUp={contactUsForm.handleBlur} type="email" name="email" id="email" className='form-control my-2' />
-        {(contactUsForm.touched.email&& contactUsForm.errors.email)?
-        <div className='alert  px-2 alert-danger'>
-        <p className='p-0 m-0'>{contactUsForm.errors.email}</p>
-        </div>
-        :""}
-      </div>
-
-      <div className='my-2 col-md-12'>
-        <label htmlFor="message"> الرسالة :</label>
-        <textarea onChange={contactUsForm.handleChange} onKeyUp={contactUsForm.handleBlur} name="message" id="message" className='form-control my-2' />
-        {(contactUsForm.touched.message&& contactUsForm.errors.message)?
-        <div className='alert px-2 alert-danger'>
-        <p className='p-0 m-0'>{contactUsForm.errors.message}</p>
-        </div>
-        :""}
-      </div>
-
-
-
-      <div className='d-flex  pt-5'>
-      {loading?
-  <button type='button' title='Loading' className='btn btn-warning d-block  ms-auto w-100  '>يتم الارسال<i className='fa-solid me-1 fa-spinner fa-spin'></i> </button>
-  : <button disabled={!(contactUsForm.isValid && contactUsForm.dirty)} type='submit' className='btn btn-warning d-block  ms-auto w-100 '>ارسال</button>
+          <div className="text-center mb-5">
+            <h2 className="textMainColor">مواقعنا على التواصل الاجتماعي</h2>
+            <p className="text-dark">
+            <strong>تويتر:</strong>
+            <br/>
+            <a href='' onClick={goToTwitter}>onemillion_ar</a>
+            <br/>
+            <strong>تيك توك:</strong>
+            <br/>
+            <a href='' onClick={goToTikTok}>onemillionpixels</a>
+            </p>
+          </div>
+          </div>
+    </div>
+  )
 }
-     </div>
-      </form>
-
-        </div>
-      );
-    };    
 
 export default ContactUs

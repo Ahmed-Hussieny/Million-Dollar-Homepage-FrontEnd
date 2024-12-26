@@ -3,7 +3,7 @@ import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
 const Layout = () => {
   return (
-    <div>
+    <div style={{ width:'1002px'}}>
       <Navbar/>
       <Outlet/>
       <Footer/>

@@ -5,8 +5,8 @@ const Footer = () => {
 
   const isActive = location.pathname !== '/ContactUs';
   return (
-    <footer className="bg-warning text-center">
-    {isActive && <p className="text-dark m-0">
+    <footer className="bg-black text-center">
+    {isActive && <p className="textMainColor m-0">
       © 2024 مليون بكسل باللغة العربية. جميع الحقوق محفوظة.
     </p>}
   </footer>
