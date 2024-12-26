@@ -52,7 +52,7 @@ export default function Login() {
     }
 
     return (
-        <div className='container mt-5' style={{direction:'rtl'}}>
+        <div className='container mt-5 rtlDirection'>
 <form
   onSubmit={LoginForm.handleSubmit}
   className="borderMaincolor p-4 w-100 rounded-3 shadow-lg"
@@ -64,7 +64,7 @@ export default function Login() {
                 </div>
                 : ""}
   {/* Email Input */}
-  <div className="mb-3">
+  <div className="mb-3 text-end">
     <label htmlFor="email" className="form-label fw-bold text-secondary">
       البريد الإلكتروني:
     </label>
@@ -85,7 +85,7 @@ export default function Login() {
   </div>
 
   {/* Password Input */}
-  <div className="mb-3">
+  <div className="mb-3 text-end">
     <label htmlFor="password" className="form-label fw-bold text-secondary">
       كلمة السر:
     </label>

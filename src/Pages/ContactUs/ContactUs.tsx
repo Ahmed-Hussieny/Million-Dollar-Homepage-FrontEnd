@@ -15,27 +15,19 @@ const ContactUs = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     fetchData();
-    
-  }, []);
+  });
   const fetchData = async () => {
     await dispatch(getLogos()).unwrap();
   };
   return (
-    <div className="bg-light" style={{ direction: "rtl" }}>
+    <div className="bg-light vh-100 rtlDirection">
       <div className="container py-5">
           <div className="row align-items-center mb-5">
-          <div className="col-md-6 text-center text-md-end" >
+          <div className="col-md- text-center text-md-end" >
               <h2 className="textMainColor">تواصل معنا</h2>
               <p className="text-dark">
               نحن هنا لمساعدتك والإجابة على جميع استفساراتك , اذا كان لديك أي أسئلة , اقتراحات او تحتاج الى دعم , لا تتردد في التواصل معنا من خلال الطرق التالية
               </p>
-            </div>
-            <div className="col-md-6">
-              <img
-                src="https://via.placeholder.com/500x300"
-                alt="Our mission"
-                className="img-fluid rounded shadow"
-              />
             </div>
             
           </div>

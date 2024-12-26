@@ -10,12 +10,12 @@ const Navbar = () => {
   const {numberOfPixelsUsed} = useSelector((state: { LogoData: { numberOfPixelsUsed: number } }) => state.LogoData)
 
   return (
-    <nav className="navbar p-0 pt-2  bg-black" style={{direction: 'rtl' }}>
+    <nav className="navbar p-0 pt-2 bg-black rtlDirection">
       <div className="d-flex justify-content-between">
       <div className='col-3 '>
-      <img className="w-50" onClick={() => navigate('/')} style={{cursor:'pointer'}} src={logo} alt="logo"/>
+      <img className="w-75 pointer" onClick={() => navigate('/')} src={logo} alt="logo"/>
       </div>
-      <div className='col-md-8  d-flex justify-content-around' style={{ fontSize: '12px' }}>
+      <div className='col-md-8  d-flex justify-content-around font12px'>
         <div className="d-flex justify-content-between col-md-8">
         <p className="text-white"><span className='dot'></span> 1,000,000 بكسل</p>
         <p className="text-white"><span className='dot'></span> ٢  ريال سعودي لكل بكسل</p>

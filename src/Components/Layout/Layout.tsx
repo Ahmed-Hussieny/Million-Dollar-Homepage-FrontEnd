@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
+import '../../App.css'
 const Layout = () => {
   return (
-    <div style={{ width:'1002px'}}>
+    <div className='m-auto width1002'>
       <Navbar/>
       <Outlet/>
       <Footer/>

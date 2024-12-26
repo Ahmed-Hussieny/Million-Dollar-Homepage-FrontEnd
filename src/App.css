@@ -20,6 +20,18 @@
   /* padding: 2rem; */
   text-align: center;
 }
+.rtlDirection {
+  direction: rtl !important;
+}
+.pointer {
+  cursor: pointer;
+}
+.font12px {
+  font-size: 12px !important;
+}
+.width1002{
+  width: 1002px !important;
+}
 .dot{
   background-color: var(--main-color);
   border-radius: 50%;

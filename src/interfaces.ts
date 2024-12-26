@@ -49,7 +49,7 @@ export interface LoginPayload {
 }
 
 export interface AddLogoForm {
-  _id: string,
+  _id?: string,
   username: string,
   email: string,
   title: string,

@@ -6,42 +6,27 @@ const AboutUs = () => {
   const dispatch = useAppDispatch();
     useEffect(() => {
       fetchData();
-      
-    }, []);
+    });
     const fetchData = async () => {
       await dispatch(getLogos()).unwrap();
     };
     return (
-      <div className="about-us-page bg-light d-flex" style={{ direction: "rtl" }}>
+      <div className="about-us-page vh-100 bg-light d-flex rtlDirection">
         {/* Content Section */}
         <div className="container py-5">
           <div className="row align-items-center mb-5">
-          <div className="col-md-6 text-center text-md-end" >
+          <div className=" text-center text-md-end" >
               <h2 className="text-warning">من نحن</h2>
               <p className="text-dark">
               صفحة المليون بكسل هي فكرة مبتكرة تهدف إلى تقديم مساحة إعلانية فريدة من نوعها , تجمع بين الابداع والبساطة . نحن نمنح الافراد و الشركات فرصة ليكونوا جزءاً من مشروع رقمي يعتمد على بيع مساحات صغيرة (البكسلات) في صفحة واحدة . بحيث يمكن للجميع ترك بصمتهم و الإعلان عن خدماتهم او منتجاتهم بطريقة مميزة لا تُنسى !
               </p>
-            </div>
-            <div className="col-md-6">
-              <img
-                src="https://via.placeholder.com/500x300"
-                alt="Our mission"
-                className="img-fluid rounded shadow"
-              />
             </div>
             
           </div>
 
           <div className="row align-items-center mb-5">
           
-            <div className="col-md-6">
-              <img
-                src="https://via.placeholder.com/500x300"
-                alt="Our mission"
-                className="img-fluid rounded shadow"
-              />
-            </div>
-            <div className="col-md-6 text-center text-md-end" >
+            <div className="col-md- text-center text-md-end" >
               <h2 className="textMainColor">رسالتنا</h2>
               <p className="text-dark">
              هي بناء لوحة إعلانية رقمية تمثل تنوع المجتمع العربي وإبداعاته , من خلال توفير منصة تفاعلية تعكس الروح الابتكارية وتتيح فرصة للجميع للمشاركة والابداع .

@@ -1,17 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import '../../App.css'
 import './PixelsPage.css';
-import { LogoEntry, SelectedCell } from '../../interfaces';
-import { getLogos } from '../../Store/LogosSlices';
+import { LogoEntry } from '../../interfaces';
+import { addLogo, getLogos } from '../../Store/LogosSlices';
 import { useAppDispatch } from '../../Store/store';
-import axios from 'axios';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { isItValidCell, splitImageIntoPixels } from '../../utils/ImageProcessing/splitImageIntoPixels';
+import { createFormData } from '../../utils/handelFormData';
 
 const PixelsPage = () => {
   const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [logos, setLogos] = useState<LogoEntry[]>([])
+  const [Logos, setLogos] = useState<LogoEntry[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [alertType, setAlertType] = useState("alert-danger");
   const [urlPay, setUrlPay] = useState("");
   const totalCells = 10000;
   const dispatch = useAppDispatch();
@@ -53,8 +56,6 @@ const PixelsPage = () => {
     },
   });
 
-  
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -67,7 +68,11 @@ const PixelsPage = () => {
   const fetchData = async () => {
     const { logos } = await dispatch(getLogos()).unwrap();
     setLogos(logos)
-    logos?.forEach((entry: LogoEntry) => {
+    renderTheGrid();
+  };
+
+  const renderTheGrid = () => {
+    Logos?.forEach((entry: LogoEntry) => {
       entry?.pixels?.forEach((cell) => {
         const cellElement = document.querySelector(
           `[data-id="${cell.pixelNumber}"]`
@@ -87,28 +92,28 @@ const PixelsPage = () => {
       });
     });
   };
+  useMemo(()=>{
+    renderTheGrid();
+},[Logos]);
 
-  const toggleCellSelection = (cell: HTMLDivElement) => {
-    //* check if the cell is in any logo pixels
-    const cellId = parseInt(cell.getAttribute("data-id") || "0", 10);
-    const logoPixels = logos?.map((entry: LogoEntry) => entry.pixels).flat();
-    const isCellInLogo = logoPixels.some((pixel) => pixel.pixelNumber === cellId);
-    if (isCellInLogo) {
-      setErrorMessage("لا يمكنك تحديد خلية موجودة في شعار آخر");
-      setTimeout(() => setErrorMessage(""), 10000);
-      return;
-    }
-    setSelectedCells((prev) => {
-      const isSelected = prev.includes(cell);
-      if (isSelected) {
-        cell.style.backgroundColor = "#ccc";
-        return prev.filter((c) => c !== cell);
-      } else {
-        cell.style.backgroundColor = "#999";
-        return [...prev, cell];
-      }
-    });
-  };
+const toggleCellSelection = (cell: HTMLDivElement) => {
+  //* check if the cell is in any logo pixels
+  const cellId = parseInt(cell.getAttribute("data-id") || "0", 10);
+  const logoPixels = Logos?.map((entry: LogoEntry) => entry.pixels).flat();
+  const isCellInLogo = logoPixels?.some((pixel) => pixel.pixelNumber === cellId);
+  if (!isCellInLogo) {
+      setSelectedCells((prev) => {
+          const isSelected = prev.includes(cell);
+          if (isSelected) {
+              cell.style.backgroundColor = "#ccc";
+              return prev.filter((c) => c !== cell);
+          } else {
+              cell.style.backgroundColor = "#999";
+              return [...prev, cell];
+          }
+      });
+  }
+};
 
   const sortCells = () => {
     selectedCells.sort((a, b) => {
@@ -118,142 +123,61 @@ const PixelsPage = () => {
     });
   };
 
-  const splitImageIntoPixels = (image: HTMLImageElement) => {
-    image.onload = () => {
-      const cols = parseInt(formik.values.cols, 10);
-      const rows = parseInt(formik.values.rows, 10);
-
-      if (isNaN(cols) || cols <= 0 || isNaN(rows) || rows <= 0) {
-        setErrorMessage("عدد الصفوف والأعمدة يجب أن يكون رقمًا صحيحًا أكبر من صفر");
-        setTimeout(() => setErrorMessage(""), 10000);
-        return;
-      }
-
-      const imageWidth = image.width;
-      const imageHeight = image.height;
-      const cellWidth = 10;
-      const cellHeight = 10;
-
-      const partWidth = Math.floor(imageWidth / cols);
-      const partHeight = Math.floor(imageHeight / rows);
-
-      const cellData: SelectedCell[] = [];
-
-      selectedCells.forEach((cell, index) => {
-        const row = Math.floor(index / cols);
-        const col = index % cols;
-
-        const canvas = document.createElement("canvas");
-        canvas.width = cellWidth;
-        canvas.height = cellHeight;
-        const ctx = canvas.getContext("2d");
-
-        if (ctx) {
-          ctx.drawImage(
-            image,
-            col * partWidth,
-            row * partHeight,
-            partWidth,
-            partHeight,
-            0,
-            0,
-            cellWidth,
-            cellHeight
-          );
-
-          cell.innerHTML = "";
-          cell.appendChild(canvas);
-          cell.style.backgroundColor = "transparent";
-          cellData.push({
-            cellId: parseInt(cell.dataset.id || "0", 10),
-            canvasData: canvas.toDataURL(),
-          });
-        }
-      });
-      const apiData = createFormData(cellData);
-      console.log(formik.values);
-      handleSubmit(apiData);
-      setSelectedCells([]);
-    };
-  };
-
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || selectedCells.length === 0) return;
     formik.setFieldValue("image", event.target.files?.[0]);
   };
 
-  const handleFileChange = () => {
-    if (selectedCells.length == 0) {
-      setErrorMessage("يجب تحديد عدد الخلايا المطلوبة علي المصفوفة");
-      setTimeout(() => setErrorMessage(""), 10000);
-      return;
-    } else if (parseInt(formik.values.rows) == 0 || parseInt(formik.values.cols) == 0) {
-      setErrorMessage("يجب تحديد عدد الصفوف والأعمدة");
-      setTimeout(() => setErrorMessage(""), 10000);
-      return;
-    } else if (selectedCells.length != (parseInt(formik.values.rows) * parseInt(formik.values.cols))) {
-      setErrorMessage("عدد الخلايا المحددة لا يتطابق مع عدد الصفوف والأعمدة المحددة");
-      setTimeout(() => setErrorMessage(""), 10000);
-      return;
-    }
-
+  const handleFileChange = async () => {
+    setAlertType('alert-danger');
+    if (!isItValidCell(selectedCells, formik, setErrorMessage).isValid) return;
     sortCells();
     if (!formik.values.image) return;
     const image = new Image();
-    image.src = URL.createObjectURL(formik.values.image);
-    // setImg(image);
-    splitImageIntoPixels(image);
+        image.src = URL.createObjectURL(formik.values.image);
+        const cells = await splitImageIntoPixels(image, formik.values.cols, formik.values.rows, selectedCells);
+        const apiData = createFormData(cells, formik.values);
+        console.log(apiData);
+        handleSubmit(apiData);
+        setSelectedCells([]);
+        fetchData();
 
   };
 
-  const createFormData = (cellData: SelectedCell[]) => {
-    const apiData = new FormData();
-    apiData.append("username", formik.values.username);
-    apiData.append("email", formik.values.email);
-    apiData.append("title", formik.values.title);
-    apiData.append("description", formik.values.description);
-    apiData.append("rows", formik.values.rows.toString());
-    apiData.append("cols", formik.values.cols.toString());
-    apiData.append("logoLink", formik.values.logoLink);
-    if (formik.values.image) {
-      apiData.append("image", formik.values.image);
-    }
-
-    cellData.forEach((item, index) => {
-      apiData.append(`selectedCells[${index}][cellId]`, item.cellId.toString());
-      apiData.append(`selectedCells[${index}][canvasData]`, item.canvasData);
-    });
-    return apiData;
-  };
+  const resetForm= ()=>{
+        formik.values.username = "";
+        formik.values.email = "";
+        formik.values.title = "";
+        formik.values.description = "";
+        formik.values.rows = "";
+        formik.values.cols = "";
+        formik.values.logoLink = "";
+        formik.values.image = null;
+}
 
   const handleSubmit = async (apiData: FormData) => {
-    try {
-      const response = await axios.post("http://localhost:3000/logo/addLogo", apiData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      const data = response.data;
-      console.log(data)
-      if (data.paymentLink) {
-        setUrlPay(data.paymentLink);
-      }
-
-      console.log(data);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage("An unknown error occurred.");
-      }
-      setTimeout(() => setErrorMessage(""), 10000);
-    }
-  };
+    const {payload} = await dispatch(addLogo({apiData})) as { payload: { success: boolean,paymentLink:string,data:{ message:string} } };
+            console.log(payload.success);
+            if(payload.success){
+                setAlertType('alert-success');
+                setErrorMessage("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
+                setSelectedCells([]);
+                resetForm();
+                if (payload.paymentLink) {
+                  setUrlPay(payload.paymentLink);
+                }
+                fetchData();
+            } else {
+                setErrorMessage(payload.data.message);
+                setAlertType('alert-danger');
+            }
+            fetchData();
+          };
 
   return (
     <div>
-      <form className="form-container" style={{ direction: 'rtl' }}>
+      <form className="form-container rtlDirection" >
         <label className="form-label text-warning fw-bold mt-1">
           قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br/>
           <span className="text-danger">
@@ -409,7 +333,7 @@ const PixelsPage = () => {
       </div>
 
       {errorMessage ? (
-        <div className="alert alert-danger mt-2">{errorMessage}</div>
+        <div className={`alert ${alertType} mt-2`}>{errorMessage}</div>
       ) : (
         ""
       )}

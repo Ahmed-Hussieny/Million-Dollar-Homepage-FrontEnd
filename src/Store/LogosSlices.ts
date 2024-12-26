@@ -6,10 +6,38 @@ export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () =
     const { data } = await axios.get(`http://localhost:3000/logo/getLogos`);
     return data;
 });
-export const addLogo = createAsyncThunk<LogoEntry>("Logos/addLogo", async (apiData) => {
-    const { data } = await axios.post(`http://localhost:3000/logo/addLogo`, apiData);
-    return data;
+
+export const addLogo = createAsyncThunk<LogoEntry ,{apiData: FormData}>("Logos/addLogo", async ({apiData}) => {
+    try{
+        const { data } = await axios.post(`http://localhost:3000/logo/addLogo`, apiData ,{
+            headers:{
+                "Content-Type": "multipart/form-data",
+            }
+        });
+        console.log(data);
+        return data;
+    }
+    catch(error){
+        console.log(error);
+        return error;
+    }
 });
+export const addUnPaindLogo = createAsyncThunk<LogoEntry ,{apiData: FormData}>("Logos/addUnPaindLogo", async ({apiData}) => {
+    try{
+        const { data } = await axios.post(`http://localhost:3000/logo/addUnpaidLogo`, apiData ,{
+            headers:{
+                "Content-Type": "multipart/form-data",
+                accesstoken: localStorage.getItem('token')
+            }
+        });
+        console.log(data);
+        return data;
+    }
+    catch(error){
+        console.log(error);
+    }
+});
+
 export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: FormData }>("Logos/updateLogo", async ({ id, apiData }) => {
     try {
         const { data } = await axios.put(`http://localhost:3000/logo/updateLogo/${id}`, apiData, {
@@ -18,7 +46,6 @@ export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: For
                 accesstoken: localStorage.getItem('token')
             }
         });
-        console.log(data);
         return data;
     }
     catch (error) {
@@ -34,7 +61,6 @@ export const deleteLogo = createAsyncThunk<LogoEntry, { id: string;}>("Logos/del
                 accesstoken: localStorage.getItem('token')
             }
         });
-        console.log(data);
         return data;
     }
     catch (error) {
@@ -70,6 +96,13 @@ const LogoSlice = createSlice({
             state.Logos.push(payload);
         });
         builder.addCase(addLogo.rejected, (state) => {
+            state.Logos = [];
+        }
+        );
+        builder.addCase(addUnPaindLogo.fulfilled, (state, { payload }) => {
+            state.Logos.push(payload);
+        });
+        builder.addCase(addUnPaindLogo.rejected, (state) => {
             state.Logos = [];
         }
         );

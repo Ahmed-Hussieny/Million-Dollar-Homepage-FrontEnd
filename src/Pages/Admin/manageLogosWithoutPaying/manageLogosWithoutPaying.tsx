@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import '../../PixelsPage/PixelsPage.css';
-import axios from 'axios';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../../Store/store';
 import { LogoEntry, SelectedCell } from '../../../interfaces';
-import { deleteLogo, getLogos, updateLogo } from '../../../Store/LogosSlices';
+import { addUnPaindLogo, deleteLogo, getLogos, updateLogo } from '../../../Store/LogosSlices';
 import { useNavigate } from 'react-router-dom';
 import { isItValidCell, splitImageIntoPixels } from '../../../utils/ImageProcessing/splitImageIntoPixels';
 import { createFormData } from '../../../utils/handelFormData';
@@ -15,7 +14,7 @@ const ManageLogosWithoutPaying = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [alertType, setAlertType] = useState("alert-danger");
-    const [logos, setLogos] = useState<LogoEntry[]>();
+    const [Logos, setLogos] = useState<LogoEntry[]>([]);
     const totalCells = 10000;
     const dispatch = useAppDispatch();
 
@@ -56,14 +55,18 @@ const ManageLogosWithoutPaying = () => {
             console.log(val);
         },
     });
-    const navigate = useNavigate()
+    
+    const navigate = useNavigate();
+
     const fetchData = async () => {
-        console.log('---------------------------')
         setSelectedCells([]);
-        setLogos([]);
         const { logos } = await dispatch(getLogos()).unwrap();
         setLogos(logos);
-        logos?.forEach((entry: LogoEntry) => {
+        renderTheGrid();
+    };
+    
+    const renderTheGrid = () => {
+        Logos?.forEach((entry: LogoEntry) => {
             entry?.pixels?.forEach((cell) => {
                 const cellElement = document.querySelector(
                     `[data-id="${cell.pixelNumber}"]`
@@ -102,6 +105,13 @@ const ManageLogosWithoutPaying = () => {
             });
         });
     };
+    // useEffect(()=>{
+    //     renderTheGrid();
+    // },[Logos]);
+    useMemo(() => {
+        renderTheGrid();
+    } , [Logos]);
+
     useEffect(() => {
         if (!localStorage.getItem('token')) {
             navigate('/login');
@@ -109,22 +119,18 @@ const ManageLogosWithoutPaying = () => {
         fetchData();
     }, []);
 
-    const handelDeleteLogo = async () => {
+    const handleDeleteLogo = async () => {
         const data = await dispatch(deleteLogo({ id: formik.values._id })).unwrap();
-        setSelectedCells([]);
         if (data.success) {
             setAlertType('alert-success');
             setErrorMessage("تم حذف الشعار بنجاح");
             setTimeout(() => setErrorMessage(""), 10000);
-            resetForm();
+            window.location.reload();
         }
-        fetchData();
     };
-    
 
     const handelUpdateLogo = async () => {
         sortCells();
-        // setLogos([]);
         let cells: SelectedCell[] = [];
         if (formik.values.image) {
             const image = new Image();
@@ -144,6 +150,7 @@ const ManageLogosWithoutPaying = () => {
         }
         fetchData();
     };
+
     const resetForm= ()=>{
         formik.values._id = "";
             formik.values.username = "";
@@ -159,7 +166,7 @@ const ManageLogosWithoutPaying = () => {
     const toggleCellSelection = (cell: HTMLDivElement) => {
         //* check if the cell is in any logo pixels
         const cellId = parseInt(cell.getAttribute("data-id") || "0", 10);
-        const logoPixels = logos?.map((entry: LogoEntry) => entry.pixels).flat();
+        const logoPixels = Logos?.map((entry: LogoEntry) => entry.pixels).flat();
         const isCellInLogo = logoPixels?.some((pixel) => pixel.pixelNumber === cellId);
         if (!isCellInLogo) {
             setSelectedCells((prev) => {
@@ -173,7 +180,6 @@ const ManageLogosWithoutPaying = () => {
                 }
             });
         }
-
     };
 
     const sortCells = () => {
@@ -191,7 +197,7 @@ const ManageLogosWithoutPaying = () => {
     };
 
     const handleFileChange = async () => {
-        console.log(selectedCells)
+        setAlertType('alert-danger');
         if (!isItValidCell(selectedCells, formik, setErrorMessage).isValid) return;
         sortCells();
         if (!formik.values.image) return;
@@ -206,21 +212,17 @@ const ManageLogosWithoutPaying = () => {
     };
 
     const handleSubmit = async (apiData: FormData) => {
-        try {
-            const response = await axios.post("http://localhost:3000/logo/addUnpaidLogo", apiData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            const data = response.data;
-            console.log(data);
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setErrorMessage(error.response.data.message);
-            } else {
-                setErrorMessage("An unknown error occurred.");
-            }
-            setTimeout(() => setErrorMessage(""), 10000);
+        const {payload} = await dispatch(addUnPaindLogo({apiData})) as { payload: { success: boolean, data:{ message:string} } };
+        console.log(payload.success);
+        if(payload.success){
+            setAlertType('alert-success');
+            setErrorMessage("تم إضافة الشعار بنجاح");
+            setSelectedCells([]);
+            resetForm();
+            fetchData();
+        } else {
+            setErrorMessage(payload.data.message);
+            setAlertType('alert-danger');
         }
         fetchData();
     };
@@ -381,7 +383,7 @@ const ManageLogosWithoutPaying = () => {
             <div className='d-flex justify-content-evenly my-2'>
                 <button disabled={!(formik.isValid && formik.dirty) || formik.values._id !=""} type='button' onClick={handleFileChange} className='btn btn-success w-25 p-0 '>اضافة</button>
                 <button disabled={formik.values._id == ""} type='button' onClick={handelUpdateLogo} className='btn btn-success w-25 p-0 '>تعديل</button>
-                <button disabled={formik.values._id == ""} type='button' onClick={handelDeleteLogo} className='btn btn-danger w-25 p-0 '>حذف</button>
+                <button disabled={formik.values._id == ""} type='button' onClick={handleDeleteLogo} className='btn btn-danger w-25 p-0 '>حذف</button>
             </div>
 
             {errorMessage ? (

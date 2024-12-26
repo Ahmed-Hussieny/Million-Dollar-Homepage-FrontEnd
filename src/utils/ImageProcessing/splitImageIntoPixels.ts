@@ -47,11 +47,11 @@ const splitImageIntoPixels = (image: HTMLImageElement, colsP: string, rowsP: str
                 }
             });
 
-            resolve(cellData); // Resolve the Promise with the populated cellData
+            resolve(cellData);
         };
 
         image.onerror = () => {
-            reject(new Error("Failed to load image")); // Reject the Promise if there's an error loading the image
+            reject(new Error("Failed to load image"));
         };
     });
 };
