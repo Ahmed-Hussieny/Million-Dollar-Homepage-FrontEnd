@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 import LogoSlice from "./LogosSlices";
 import AuthSlice from "./authSlice";
-import { useDispatch } from "react-redux";
+import globalSlice from "./globalSlice";
+
 export const Config = configureStore({
     reducer: {
         LogoData: LogoSlice,
-        AuthData : AuthSlice
+        AuthData : AuthSlice,
+        globalData: globalSlice
     },
 });
 

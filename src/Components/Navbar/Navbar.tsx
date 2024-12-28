@@ -39,11 +39,13 @@ const Navbar = () => {
             isActive("/AboutUs") ? "primary" : ""
           }`} onClick={() => navigate('/AboutUs')} type="button"><span>من نحن</span></button><span>|</span>
         <button className={`btn btn-sm ${
+            isActive("/policyPage") ? "primary" : ""
+          }`} onClick={() => navigate('/policyPage')} type="button"><span>سياسة الخصوصية</span></button><span>|</span>
+        <button className={`btn btn-sm ${
             isActive("/ContactUs") ? "primary" : ""
           }`} onClick={() => navigate('/ContactUs')} type="button"><span>تواصل معنا</span></button>
       </div>
     </nav>
-
   )
 }
 

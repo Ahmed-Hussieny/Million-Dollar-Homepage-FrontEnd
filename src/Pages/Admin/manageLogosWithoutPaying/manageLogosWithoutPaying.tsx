@@ -8,13 +8,16 @@ import { addUnPaindLogo, deleteLogo, getLogos, updateLogo } from '../../../Store
 import { useNavigate } from 'react-router-dom';
 import { isItValidCell, splitImageIntoPixels } from '../../../utils/ImageProcessing/splitImageIntoPixels';
 import { createFormData } from '../../../utils/handelFormData';
+import { setLoading } from '../../../Store/globalSlice';
+import { toast, ToastContainer } from 'react-toastify';
 
 const ManageLogosWithoutPaying = () => {
     const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [alertType, setAlertType] = useState("alert-danger");
+    // const [errorMessage, setErrorMessage] = useState("");
+    // const [alertType, setAlertType] = useState("alert-danger");
     const [Logos, setLogos] = useState<LogoEntry[]>([]);
+    const [pixelsLen , setPixelsLen] = useState(0);
     const totalCells = 10000;
     const dispatch = useAppDispatch();
 
@@ -66,6 +69,7 @@ const ManageLogosWithoutPaying = () => {
     };
     
     const renderTheGrid = () => {
+        dispatch(setLoading(true));
         Logos?.forEach((entry: LogoEntry) => {
             entry?.pixels?.forEach((cell) => {
                 const cellElement = document.querySelector(
@@ -82,15 +86,8 @@ const ManageLogosWithoutPaying = () => {
                     cellElement.style.backgroundColor = "transparent";
                     cellElement.title = entry.title;
                     cellElement.onclick = () => {
-                        formik.values._id = entry._id;
-                        formik.values.username = entry.username;
-                        formik.values.email = entry.email;
-                        formik.values.title = entry.title;
-                        formik.values.description = entry.description;
-                        formik.values.rows = entry.rows;
-                        formik.values.cols = entry.cols;
-                        formik.values.logoLink = entry.logoLink;
-                        console.log(entry)
+                        resetForm();
+                        
                         setSelectedCells([]);
                         setSelectedCells(
                             entry.pixels.map((pixel) =>
@@ -99,11 +96,20 @@ const ManageLogosWithoutPaying = () => {
                                 ) as HTMLDivElement
                             )
                         );
-                        
+                        formik.values._id = entry._id;
+                        formik.values.username = entry.username;
+                        formik.values.email = entry.email;
+                        formik.values.title = entry.title;
+                        formik.values.description = entry.description;
+                        formik.values.rows = entry.rows;
+                        formik.values.cols = entry.cols;
+                        formik.values.logoLink = entry.logoLink;
+                        setPixelsLen(entry.pixels.length);
                     };
                 }
             });
         });
+        dispatch(setLoading(false));
     };
     // useEffect(()=>{
     //     renderTheGrid();
@@ -120,35 +126,56 @@ const ManageLogosWithoutPaying = () => {
     }, []);
 
     const handleDeleteLogo = async () => {
+        dispatch(setLoading(true));
         const data = await dispatch(deleteLogo({ id: formik.values._id })).unwrap();
         if (data.success) {
-            setAlertType('alert-success');
-            setErrorMessage("تم حذف الشعار بنجاح");
-            setTimeout(() => setErrorMessage(""), 10000);
+            // setAlertType('alert-success');
+            // setErrorMessage("تم حذف الشعار بنجاح");
+            toast.success("تم حذف الشعار بنجاح");
+            // setTimeout(() => setErrorMessage(""), 10000);
             window.location.reload();
         }
     };
 
     const handelUpdateLogo = async () => {
+        dispatch(setLoading(true));
         sortCells();
         let cells: SelectedCell[] = [];
+        if(selectedCells.length > pixelsLen && formik.values.image == null){
+            // setErrorMessage("لابد من اختيار الصورة مره اخري");
+            // setAlertType('alert-danger');
+            toast.error("لابد من اختيار الصورة مره اخري");
+            dispatch(setLoading(false));
+            return;
+        }
+        if (selectedCells.length !== (parseInt(formik.values.rows, 10) * parseInt(formik.values.cols, 10))) {
+            // setErrorMessage( "عدد الخلايا المحددة لا يتطابق مع عدد الصفوف والأعمدة المحددة");
+            // setTimeout(() => setErrorMessage(""), 10000);
+            toast.error("عدد الخلايا المحددة لا يتطابق مع عدد الصفوف والأعمدة المحددة");
+            dispatch(setLoading(false));
+            return ;
+        }
         if (formik.values.image) {
             const image = new Image();
             image.src = URL.createObjectURL(formik.values.image);
             cells = await splitImageIntoPixels(image, formik.values.cols, formik.values.rows, selectedCells);
         }
         const apiData = createFormData(cells, formik.values);
-        console.log(apiData);
         const {payload} = await dispatch(updateLogo({ id: formik.values._id, apiData }));
         
         setSelectedCells([]);
         if((payload as { success: boolean }).success){
-            setAlertType('alert-success');
-            setErrorMessage(" تم تعديل الشعار بنجاح");
-            setTimeout(() => setErrorMessage(""), 10000);
+            // setAlertType('alert-success');
+            // setErrorMessage(" تم تعديل الشعار بنجاح");
+            // setTimeout(() => setErrorMessage(""), 10000);
+            toast.success("تم تعديل الشعار بنجاح");
+            if(fileInputRef.current){
+                fileInputRef.current.value = "";
+            }
             resetForm();
         }
         fetchData();
+        dispatch(setLoading(false));
     };
 
     const resetForm= ()=>{
@@ -191,44 +218,57 @@ const ManageLogosWithoutPaying = () => {
     };
 
     const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(selectedCells.length === 0){
+            // setErrorMessage("يجب تحديد الخلايا أولاً");
+            // setAlertType('alert-danger');
+            toast.error("يجب تحديد الخلايا أولاً");
+            return;
+        }
         const file = event.target.files?.[0];
         if (!file || selectedCells.length === 0) return;
         formik.setFieldValue("image", event.target.files?.[0]);
     };
 
     const handleFileChange = async () => {
-        setAlertType('alert-danger');
-        if (!isItValidCell(selectedCells, formik, setErrorMessage).isValid) return;
+        dispatch(setLoading(true));
+        // setAlertType('alert-danger');
+        if (!isItValidCell(selectedCells, formik).isValid) {
+            toast.error(isItValidCell(selectedCells, formik).errorMessage);
+            dispatch(setLoading(false));
+            return;
+        }
         sortCells();
         if (!formik.values.image) return;
         const image = new Image();
         image.src = URL.createObjectURL(formik.values.image);
         const cells = await splitImageIntoPixels(image, formik.values.cols, formik.values.rows, selectedCells);
         const apiData = createFormData(cells, formik.values);
-        console.log(apiData);
-        handleSubmit(apiData);
+        await handleSubmit(apiData);
         setSelectedCells([]);
-        fetchData();
+        await fetchData();
+        
     };
 
     const handleSubmit = async (apiData: FormData) => {
         const {payload} = await dispatch(addUnPaindLogo({apiData})) as { payload: { success: boolean, data:{ message:string} } };
-        console.log(payload.success);
         if(payload.success){
-            setAlertType('alert-success');
-            setErrorMessage("تم إضافة الشعار بنجاح");
+            // setAlertType('alert-success');
+            // setErrorMessage("تم إضافة الشعار بنجاح");
+            toast.success("تم إضافة الشعار بنجاح");
             setSelectedCells([]);
             resetForm();
             fetchData();
         } else {
-            setErrorMessage(payload.data.message);
-            setAlertType('alert-danger');
+            // setErrorMessage(payload.data.message);
+            // setAlertType('alert-danger');
+            toast.error(payload.data.message);
         }
         fetchData();
     };
 
     return (
         <div>
+            <ToastContainer theme="colored" />
             <form className="form-container" style={{ direction: 'rtl' }}>
                 
                 <label className="form-label text-warning fw-bold mt-1">
@@ -386,11 +426,11 @@ const ManageLogosWithoutPaying = () => {
                 <button disabled={formik.values._id == ""} type='button' onClick={handleDeleteLogo} className='btn btn-danger w-25 p-0 '>حذف</button>
             </div>
 
-            {errorMessage ? (
+            {/* {errorMessage ? (
                 <div className={`alert ${alertType} mt-2`}>{errorMessage}</div>
             ) : (
                 ""
-            )}
+            )} */}
             <div className="canvas-container">
                 {Array.from({ length: totalCells }, (_, i) => (
                     <div

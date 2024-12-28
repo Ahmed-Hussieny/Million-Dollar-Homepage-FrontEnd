@@ -9,6 +9,7 @@ import ContactUs from './Pages/ContactUs/ContactUs'
 import AboutUs from './Pages/AboutUs/AboutUs'
 import Login from './Pages/Login/Login'
 import ManageLogosWithoutPaying from './Pages/Admin/manageLogosWithoutPaying/manageLogosWithoutPaying'
+import PolicyPage from './Pages/Policy/PolicyPage'
 
 const App = () => {
   const router = createBrowserRouter([
@@ -17,6 +18,7 @@ const App = () => {
       {path:"/buyPixel", element:<PixelsPage/>},
       {path:"/ContactUs", element:<ContactUs/>},
       {path:"/AboutUs", element:<AboutUs/>},
+      {path: "policyPage", element: <PolicyPage />},
       {path:"/", element:<ShowPixels/>},
       {path:"/ManageLogosWithoutPaying", element:<ManageLogosWithoutPaying/>},
     ],},

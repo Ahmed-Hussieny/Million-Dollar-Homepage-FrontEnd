@@ -7,34 +7,32 @@ export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () =
     return data;
 });
 
-export const addLogo = createAsyncThunk<LogoEntry ,{apiData: FormData}>("Logos/addLogo", async ({apiData}) => {
-    try{
-        const { data } = await axios.post(`http://localhost:3000/logo/addLogo`, apiData ,{
-            headers:{
+export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addLogo", async ({ apiData }) => {
+    try {
+        const { data } = await axios.post(`http://localhost:3000/logo/addLogo`, apiData, {
+            headers: {
                 "Content-Type": "multipart/form-data",
             }
         });
-        console.log(data);
         return data;
     }
-    catch(error){
-        console.log(error);
+    catch (error) {
         return error;
     }
 });
-export const addUnPaindLogo = createAsyncThunk<LogoEntry ,{apiData: FormData}>("Logos/addUnPaindLogo", async ({apiData}) => {
-    try{
-        const { data } = await axios.post(`http://localhost:3000/logo/addUnpaidLogo`, apiData ,{
-            headers:{
+
+export const addUnPaindLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addUnPaindLogo", async ({ apiData }) => {
+    try {
+        const { data } = await axios.post(`http://localhost:3000/logo/addUnpaidLogo`, apiData, {
+            headers: {
                 "Content-Type": "multipart/form-data",
                 accesstoken: localStorage.getItem('token')
             }
         });
-        console.log(data);
         return data;
     }
-    catch(error){
-        console.log(error);
+    catch (error) {
+        return error;
     }
 });
 
@@ -49,11 +47,11 @@ export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: For
         return data;
     }
     catch (error) {
-        console.log(error);
+        return error;
     }
 });
 
-export const deleteLogo = createAsyncThunk<LogoEntry, { id: string;}>("Logos/deleteLogo", async ({ id }) => {
+export const deleteLogo = createAsyncThunk<LogoEntry, { id: string; }>("Logos/deleteLogo", async ({ id }) => {
     try {
         const { data } = await axios.delete(`http://localhost:3000/logo/deleteLogo/${id}`, {
             headers: {
@@ -64,7 +62,7 @@ export const deleteLogo = createAsyncThunk<LogoEntry, { id: string;}>("Logos/del
         return data;
     }
     catch (error) {
-        console.log(error);
+        return error;
     }
 });
 
@@ -80,10 +78,10 @@ const LogoSlice = createSlice({
     initialState,
     reducers: {
         changePixelNumber: (state, action) => {
-            console.log(action.payload, "------");
             state.numberOfPixelsUsed = action.payload
         }
     },
+
     extraReducers: (builder) => {
         builder.addCase(getLogos.fulfilled, (state, { payload }) => {
             state.Logos = payload.logos;
@@ -92,22 +90,22 @@ const LogoSlice = createSlice({
         builder.addCase(getLogos.rejected, (state) => {
             state.Logos = [];
         });
+
         builder.addCase(addLogo.fulfilled, (state, { payload }) => {
             state.Logos.push(payload);
         });
         builder.addCase(addLogo.rejected, (state) => {
             state.Logos = [];
-        }
-        );
+        });
+
         builder.addCase(addUnPaindLogo.fulfilled, (state, { payload }) => {
             state.Logos.push(payload);
         });
         builder.addCase(addUnPaindLogo.rejected, (state) => {
             state.Logos = [];
-        }
-        );
+        });
+        
         builder.addCase(updateLogo.fulfilled, (state, { payload }) => {
-            console.log(payload)
             state.Logos.push(payload);
         });
         builder.addCase(updateLogo.rejected, (state) => {

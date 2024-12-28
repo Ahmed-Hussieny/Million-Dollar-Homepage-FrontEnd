@@ -2,13 +2,16 @@ import { useEffect } from 'react';
 import '../../App.css'
 import { getLogos } from '../../Store/LogosSlices';
 import { useAppDispatch } from '../../Store/store';
+import { setLoading } from '../../Store/globalSlice';
 const AboutUs = () => {
   const dispatch = useAppDispatch();
     useEffect(() => {
       fetchData();
     });
     const fetchData = async () => {
+      dispatch(setLoading(true));
       await dispatch(getLogos()).unwrap();
+      dispatch(setLoading(false));
     };
     return (
       <div className="about-us-page vh-100 bg-light d-flex rtlDirection">

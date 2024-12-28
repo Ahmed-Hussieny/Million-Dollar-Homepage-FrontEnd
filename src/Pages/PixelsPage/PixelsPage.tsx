@@ -8,14 +8,17 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { isItValidCell, splitImageIntoPixels } from '../../utils/ImageProcessing/splitImageIntoPixels';
 import { createFormData } from '../../utils/handelFormData';
+import { setLoading } from '../../Store/globalSlice';
+import { ToastContainer, toast } from 'react-toastify';
 
 const PixelsPage = () => {
   const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [Logos, setLogos] = useState<LogoEntry[]>([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [alertType, setAlertType] = useState("alert-danger");
+  // const [errorMessage, setErrorMessage] = useState("");
+  // const [alertType, setAlertType] = useState("alert-danger");
   const [urlPay, setUrlPay] = useState("");
+  const [newLogo, setNewLogo] = useState<LogoEntry>();
   const totalCells = 10000;
   const dispatch = useAppDispatch();
 
@@ -57,18 +60,22 @@ const PixelsPage = () => {
   });
 
   useEffect(() => {
+    dispatch(setLoading(true));
     fetchData();
   }, []);
 
   const navigateToPay = () => {
-    console.log(urlPay)
     if (urlPay) window.location.href = urlPay;
   };
 
   const fetchData = async () => {
+    console.log('------')
+    dispatch(setLoading(true));
     const { logos } = await dispatch(getLogos()).unwrap();
     setLogos(logos)
+    console.log(Logos.length);
     renderTheGrid();
+    dispatch(setLoading(false));
   };
 
   const renderTheGrid = () => {
@@ -92,28 +99,35 @@ const PixelsPage = () => {
       });
     });
   };
-  useMemo(()=>{
-    renderTheGrid();
-},[Logos]);
 
-const toggleCellSelection = (cell: HTMLDivElement) => {
-  //* check if the cell is in any logo pixels
-  const cellId = parseInt(cell.getAttribute("data-id") || "0", 10);
-  const logoPixels = Logos?.map((entry: LogoEntry) => entry.pixels).flat();
-  const isCellInLogo = logoPixels?.some((pixel) => pixel.pixelNumber === cellId);
-  if (!isCellInLogo) {
+  useMemo(() => {
+    if (newLogo) {
+      setLogos([...Logos, newLogo]);
+    }
+  }, [newLogo])
+
+  useMemo(() => {
+    renderTheGrid();
+  }, [Logos]);
+
+  const toggleCellSelection = (cell: HTMLDivElement) => {
+    //* check if the cell is in any logo pixels
+    const cellId = parseInt(cell.getAttribute("data-id") || "0", 10);
+    const logoPixels = Logos?.map((entry: LogoEntry) => entry.pixels).flat();
+    const isCellInLogo = logoPixels?.some((pixel) => pixel.pixelNumber === cellId);
+    if (!isCellInLogo) {
       setSelectedCells((prev) => {
-          const isSelected = prev.includes(cell);
-          if (isSelected) {
-              cell.style.backgroundColor = "#ccc";
-              return prev.filter((c) => c !== cell);
-          } else {
-              cell.style.backgroundColor = "#999";
-              return [...prev, cell];
-          }
+        const isSelected = prev.includes(cell);
+        if (isSelected) {
+          cell.style.backgroundColor = "#ccc";
+          return prev.filter((c) => c !== cell);
+        } else {
+          cell.style.backgroundColor = "#999";
+          return [...prev, cell];
+        }
       });
-  }
-};
+    }
+  };
 
   const sortCells = () => {
     selectedCells.sort((a, b) => {
@@ -124,64 +138,92 @@ const toggleCellSelection = (cell: HTMLDivElement) => {
   };
 
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedCells.length === 0) {
+      // setErrorMessage("يجب تحديد الخلايا أولاً");
+      toast.error("يجب تحديد الخلايا أولاً");
+      // setAlertType('alert-danger');
+      console.log(event.target.files?.[0]);
+      event.target.files = null;
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""; // Reset the input value
+      }
+      console.log(event.target.files?.[0]);
+      return;
+    }
+    console.log(event.target.files?.[0]);
     const file = event.target.files?.[0];
     if (!file || selectedCells.length === 0) return;
     formik.setFieldValue("image", event.target.files?.[0]);
   };
 
   const handleFileChange = async () => {
-    setAlertType('alert-danger');
-    if (!isItValidCell(selectedCells, formik, setErrorMessage).isValid) return;
+    dispatch(setLoading(true));
+    // setAlertType('alert-danger');
+    if (!isItValidCell(selectedCells, formik).isValid) {
+      toast.error(isItValidCell(selectedCells, formik).errorMessage);
+      dispatch(setLoading(false));
+      return;
+    }
     sortCells();
-    if (!formik.values.image) return;
+    if (!formik.values.image) {
+      console.log(formik.values.image);
+      // setErrorMessage("يجب اختيار صورة");
+      toast.error("يجب اختيار صورة");
+      dispatch(setLoading(false));
+      return
+    }
     const image = new Image();
-        image.src = URL.createObjectURL(formik.values.image);
-        const cells = await splitImageIntoPixels(image, formik.values.cols, formik.values.rows, selectedCells);
-        const apiData = createFormData(cells, formik.values);
-        console.log(apiData);
-        handleSubmit(apiData);
-        setSelectedCells([]);
-        fetchData();
-
+    image.src = URL.createObjectURL(formik.values.image);
+    const cells = await splitImageIntoPixels(image, formik.values.cols, formik.values.rows, selectedCells);
+    const apiData = createFormData(cells, formik.values);
+    await handleSubmit(apiData);
+    setSelectedCells([]);
+    await fetchData();
+    dispatch(setLoading(false));
   };
 
-  const resetForm= ()=>{
-        formik.values.username = "";
-        formik.values.email = "";
-        formik.values.title = "";
-        formik.values.description = "";
-        formik.values.rows = "";
-        formik.values.cols = "";
-        formik.values.logoLink = "";
-        formik.values.image = null;
-}
+  const resetForm = () => {
+    formik.values.username = "";
+    formik.values.email = "";
+    formik.values.title = "";
+    formik.values.description = "";
+    formik.values.rows = "";
+    formik.values.cols = "";
+    formik.values.logoLink = "";
+    formik.values.image = null;
+  }
 
   const handleSubmit = async (apiData: FormData) => {
-    const {payload} = await dispatch(addLogo({apiData})) as { payload: { success: boolean,paymentLink:string,data:{ message:string} } };
-            console.log(payload.success);
-            if(payload.success){
-                setAlertType('alert-success');
-                setErrorMessage("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
-                setSelectedCells([]);
-                resetForm();
-                if (payload.paymentLink) {
-                  setUrlPay(payload.paymentLink);
-                }
-                fetchData();
-            } else {
-                setErrorMessage(payload.data.message);
-                setAlertType('alert-danger');
-            }
-            fetchData();
-          };
+    const { payload } = await dispatch(addLogo({ apiData })) as { payload: { success: boolean, logo: LogoEntry, paymentLink: string, data: { message: string } } }
+    console.log(payload);
+    setNewLogo(payload.logo);
+    if (payload.success) {
+      // setAlertType('alert-success');
+      // setErrorMessage("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
+      toast.success("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
+      setSelectedCells([]);
+      resetForm();
+      if (payload.paymentLink) {
+        setUrlPay(payload.paymentLink);
+      }
+    } else {
+      // setErrorMessage(payload.data.message);
+      toast.error(payload.data.message);
+      // setAlertType('alert-danger');
+    }
+    await fetchData();
+  };
 
   return (
     <div>
+      <ToastContainer theme="colored" />
       <form className="form-container rtlDirection" >
         <label className="form-label text-warning fw-bold mt-1">
-          قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br/>
+          قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
           <span className="text-danger">
-        (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )</span>
+            (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )</span>
+          <br />
+          <span className="text-danger"> (  لقبول طلبكم الرجاء وضع اللوقو باللغة العربية فقط )</span>
         </label>
         <div className="row my-3">
           <div className="col-md-6">
@@ -327,16 +369,22 @@ const toggleCellSelection = (cell: HTMLDivElement) => {
           </div>
         </div>
       </form>
-      <div className='d-flex justify-content-evenly my-2'>
+      <div className='d-flex justify-content-evenly px-5 mx-5 my-2'>
         <button disabled={!(formik.isValid && formik.dirty)} type='button' onClick={handleFileChange} className='btn btn-success w-25 p-0 '>ارسال</button>
+        <div className="arrow-container w-50">
+          {urlPay &&
+            <span className="arrow">
+              <i className="fa-solid fa-arrow-right fs-3 textMainColor"></i>
+            </span>}
+        </div>
         <button className='btn btn-primary w-25 p-0' type='button' onClick={() => navigateToPay()} disabled={urlPay == ""}>شرائها</button>
       </div>
 
-      {errorMessage ? (
+      {/* {errorMessage ? (
         <div className={`alert ${alertType} mt-2`}>{errorMessage}</div>
       ) : (
         ""
-      )}
+      )} */}
       <div className="canvas-container">
         {Array.from({ length: totalCells }, (_, i) => (
           <div

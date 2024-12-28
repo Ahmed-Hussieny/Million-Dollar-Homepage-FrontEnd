@@ -1,21 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useAppDispatch } from '../../Store/store';
+import '../../App.css';
 import './PixelsPage.css';
 import { LogoEntry } from '../../interfaces';
 import { changePixelNumber, getLogos } from '../../Store/LogosSlices';
+import { setLoading } from '../../Store/globalSlice';
 const ShowPixels = () => {
   
   const totalCells = 10000;
   const dispatch = useAppDispatch();
   const [numberOfPixels, setNumberOfPixels] = useState(0);
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     setNumberOfPixels(0);
     fetchData();
     dispatch(changePixelNumber(numberOfPixels*10));
   }, []);
 
   const fetchData = async () => {
+    dispatch(setLoading(true));
     const { logos } = await dispatch(getLogos()).unwrap();
     logos?.forEach((entry: LogoEntry) => {
       entry?.pixels?.forEach((cell) => {
@@ -36,11 +39,10 @@ const ShowPixels = () => {
         }
       });
     });
+    dispatch(setLoading(false));
   };
 
   return (
-    <div>
-      <div>
         <div className="canvas-container">
           {Array.from({ length: totalCells }, (_, i) => (
             <div
@@ -51,8 +53,6 @@ const ShowPixels = () => {
             ></div>
           ))}
         </div>
-      </div>
-    </div>
   )
 }
 

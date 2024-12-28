@@ -30,7 +30,7 @@ const splitImageIntoPixels = (image: HTMLImageElement, colsP: string, rowsP: str
                         col * partWidth,
                         row * partHeight,
                         partWidth,
-                        partHeight,
+                        partHeight  ,
                         0,
                         0,
                         cellWidth,
@@ -59,7 +59,6 @@ const splitImageIntoPixels = (image: HTMLImageElement, colsP: string, rowsP: str
 const isItValidCell = ( 
     selectedCells: HTMLDivElement[], 
     formik: { values: { rows: string; cols: string; } }, 
-    setErrorMessage: (message: string) => void 
 ): {
     isValid: boolean,
     errorMessage: string
@@ -67,18 +66,12 @@ const isItValidCell = (
     let errorMessage = "";
     if (selectedCells.length == 0) {
         errorMessage = "يجب تحديد عدد الخلايا المطلوبة علي المصفوفة";
-        setErrorMessage(errorMessage);
-        setTimeout(() => setErrorMessage(""), 10000);
         return { isValid: false, errorMessage };
     } else if (parseInt(formik.values.rows, 10) === 0 || parseInt(formik.values.cols, 10) === 0) {
         errorMessage = "يجب تحديد عدد الصفوف والأعمدة";
-        setErrorMessage(errorMessage);
-        setTimeout(() => setErrorMessage(""), 10000);
         return { isValid: false, errorMessage };
     } else if (selectedCells.length !== (parseInt(formik.values.rows, 10) * parseInt(formik.values.cols, 10))) {
         errorMessage = "عدد الخلايا المحددة لا يتطابق مع عدد الصفوف والأعمدة المحددة";
-        setErrorMessage(errorMessage);
-        setTimeout(() => setErrorMessage(""), 10000);
         return { isValid: false, errorMessage };
     }
     return { isValid: true, errorMessage: "" };

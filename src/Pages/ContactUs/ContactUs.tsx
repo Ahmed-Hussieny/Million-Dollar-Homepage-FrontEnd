@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { getLogos } from "../../Store/LogosSlices";
 import { useAppDispatch } from "../../Store/store";
 import '../../App.css'
+import { setLoading } from "../../Store/globalSlice";
 const ContactUs = () => {
   const goToWhatsApp = () => {
     window.open(`https://wa.me/966500000000`, "_blank");
@@ -17,7 +18,9 @@ const ContactUs = () => {
     fetchData();
   });
   const fetchData = async () => {
+    dispatch(setLoading(true));
     await dispatch(getLogos()).unwrap();
+    dispatch(setLoading(false));
   };
   return (
     <div className="bg-light vh-100 rtlDirection">
