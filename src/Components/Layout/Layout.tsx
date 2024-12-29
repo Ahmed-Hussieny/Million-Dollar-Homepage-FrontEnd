@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import { toast, ToastContainer } from 'react-toastify'
 import { useEffect } from 'react'
 const Layout = () => {
-  const { loading, toasting } = useSelector((state: { globalData: { loading: boolean, toasting:{message: string, type: string} } }) => state.globalData)
+  const { toasting } = useSelector((state: { globalData: { loading: boolean, toasting:{message: string, type: string} } }) => state.globalData)
 
   useEffect(() => {
     if (toasting.message) {
