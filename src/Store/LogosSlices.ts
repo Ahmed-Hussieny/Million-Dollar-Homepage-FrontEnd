@@ -3,13 +3,13 @@ import axios from "axios";
 import { LogoEntry, LogosData } from "../interfaces";
 
 export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () => {
-    const { data } = await axios.get(`http://localhost:3000/logo/getLogos`);
+    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/logo/getLogos`);
     return data;
 });
 
 export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addLogo", async ({ apiData }) => {
     try {
-        const { data } = await axios.post(`http://localhost:3000/logo/addLogo`, apiData, {
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addLogo`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
@@ -23,7 +23,7 @@ export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos
 
 export const addUnPaindLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addUnPaindLogo", async ({ apiData }) => {
     try {
-        const { data } = await axios.post(`http://localhost:3000/logo/addUnpaidLogo`, apiData, {
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addUnpaidLogo`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 accesstoken: localStorage.getItem('token')
@@ -38,7 +38,7 @@ export const addUnPaindLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>
 
 export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: FormData }>("Logos/updateLogo", async ({ id, apiData }) => {
     try {
-        const { data } = await axios.put(`http://localhost:3000/logo/updateLogo/${id}`, apiData, {
+        const { data } = await axios.put(`${import.meta.env.VITE_SERVER_LINK}/logo/updateLogo/${id}`, apiData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 accesstoken: localStorage.getItem('token')
@@ -53,7 +53,7 @@ export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: For
 
 export const deleteLogo = createAsyncThunk<LogoEntry, { id: string; }>("Logos/deleteLogo", async ({ id }) => {
     try {
-        const { data } = await axios.delete(`http://localhost:3000/logo/deleteLogo/${id}`, {
+        const { data } = await axios.delete(`${import.meta.env.VITE_SERVER_LINK}/logo/deleteLogo/${id}`, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 accesstoken: localStorage.getItem('token')

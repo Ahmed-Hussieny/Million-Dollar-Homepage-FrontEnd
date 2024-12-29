@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import {createHashRouter, RouterProvider } from 'react-router-dom'
 import PixelsPage from './Pages/PixelsPage/PixelsPage'
 import ShowPixels from './Pages/PixelsPage/ShowPixels'
 import './App.css'
@@ -12,14 +12,15 @@ import ManageLogosWithoutPaying from './Pages/Admin/manageLogosWithoutPaying/man
 import PolicyPage from './Pages/Policy/PolicyPage'
 
 const App = () => {
-  const router = createBrowserRouter([
-    {path:"/login", element:<Login/>},
+  const router = createHashRouter([
+    
     {path:"/", element:<Layout/>, children:[
+      {path:"/", element:<ShowPixels/>},
       {path:"/buyPixel", element:<PixelsPage/>},
       {path:"/ContactUs", element:<ContactUs/>},
       {path:"/AboutUs", element:<AboutUs/>},
       {path: "policyPage", element: <PolicyPage />},
-      {path:"/", element:<ShowPixels/>},
+      {path:"/login", element:<Login/>},
       {path:"/ManageLogosWithoutPaying", element:<ManageLogosWithoutPaying/>},
     ],},
     

@@ -52,7 +52,7 @@ export default function Login() {
     }
 
     return (
-        <div className='container mt-5 rtlDirection'>
+        <div className='container mt-5 rtlDirection vh-100'>
 <form
   onSubmit={LoginForm.handleSubmit}
   className="borderMaincolor p-4 w-100 rounded-3 shadow-lg"

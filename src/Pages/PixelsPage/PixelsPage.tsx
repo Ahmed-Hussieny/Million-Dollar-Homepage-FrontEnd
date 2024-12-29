@@ -8,15 +8,11 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { isItValidCell, splitImageIntoPixels } from '../../utils/ImageProcessing/splitImageIntoPixels';
 import { createFormData } from '../../utils/handelFormData';
-import { setLoading } from '../../Store/globalSlice';
-import { ToastContainer, toast } from 'react-toastify';
-
+import { setLoading, setToast } from '../../Store/globalSlice';
 const PixelsPage = () => {
   const [selectedCells, setSelectedCells] = useState<HTMLDivElement[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [Logos, setLogos] = useState<LogoEntry[]>([]);
-  // const [errorMessage, setErrorMessage] = useState("");
-  // const [alertType, setAlertType] = useState("alert-danger");
   const [urlPay, setUrlPay] = useState("");
   const [newLogo, setNewLogo] = useState<LogoEntry>();
   const totalCells = 10000;
@@ -54,8 +50,7 @@ const PixelsPage = () => {
       image: null
     },
     validationSchema,
-    onSubmit: (val) => {
-      console.log(val);
+    onSubmit: () => {
     },
   });
 
@@ -69,11 +64,9 @@ const PixelsPage = () => {
   };
 
   const fetchData = async () => {
-    console.log('------')
     dispatch(setLoading(true));
     const { logos } = await dispatch(getLogos()).unwrap();
     setLogos(logos)
-    console.log(Logos.length);
     renderTheGrid();
     dispatch(setLoading(false));
   };
@@ -139,18 +132,13 @@ const PixelsPage = () => {
 
   const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (selectedCells.length === 0) {
-      // setErrorMessage("يجب تحديد الخلايا أولاً");
-      toast.error("يجب تحديد الخلايا أولاً");
-      // setAlertType('alert-danger');
-      console.log(event.target.files?.[0]);
+      dispatch(setToast({ message: "يجب تحديد الخلايا أولاً", type: "error" }));
       event.target.files = null;
       if (fileInputRef.current) {
-        fileInputRef.current.value = ""; // Reset the input value
+        fileInputRef.current.value = "";
       }
-      console.log(event.target.files?.[0]);
       return;
     }
-    console.log(event.target.files?.[0]);
     const file = event.target.files?.[0];
     if (!file || selectedCells.length === 0) return;
     formik.setFieldValue("image", event.target.files?.[0]);
@@ -158,17 +146,14 @@ const PixelsPage = () => {
 
   const handleFileChange = async () => {
     dispatch(setLoading(true));
-    // setAlertType('alert-danger');
     if (!isItValidCell(selectedCells, formik).isValid) {
-      toast.error(isItValidCell(selectedCells, formik).errorMessage);
+      dispatch(setToast({ message: isItValidCell(selectedCells, formik).errorMessage, type: "error" }));
       dispatch(setLoading(false));
       return;
     }
     sortCells();
     if (!formik.values.image) {
-      console.log(formik.values.image);
-      // setErrorMessage("يجب اختيار صورة");
-      toast.error("يجب اختيار صورة");
+      dispatch(setToast({ message: "يجب اختيار صورة", type: "error" }));
       dispatch(setLoading(false));
       return
     }
@@ -191,32 +176,29 @@ const PixelsPage = () => {
     formik.values.cols = "";
     formik.values.logoLink = "";
     formik.values.image = null;
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
 
   const handleSubmit = async (apiData: FormData) => {
     const { payload } = await dispatch(addLogo({ apiData })) as { payload: { success: boolean, logo: LogoEntry, paymentLink: string, data: { message: string } } }
-    console.log(payload);
     setNewLogo(payload.logo);
     if (payload.success) {
-      // setAlertType('alert-success');
-      // setErrorMessage("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
-      toast.success("تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد");
+      dispatch(setToast({ message: "تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد", type: "success" }));
       setSelectedCells([]);
       resetForm();
       if (payload.paymentLink) {
         setUrlPay(payload.paymentLink);
       }
     } else {
-      // setErrorMessage(payload.data.message);
-      toast.error(payload.data.message);
-      // setAlertType('alert-danger');
+      dispatch(setToast({ message: payload.data.message, type: "error" }));
     }
     await fetchData();
   };
 
   return (
     <div>
-      <ToastContainer theme="colored" />
       <form className="form-container rtlDirection" >
         <label className="form-label text-warning fw-bold mt-1">
           قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
@@ -380,11 +362,6 @@ const PixelsPage = () => {
         <button className='btn btn-primary w-25 p-0' type='button' onClick={() => navigateToPay()} disabled={urlPay == ""}>شرائها</button>
       </div>
 
-      {/* {errorMessage ? (
-        <div className={`alert ${alertType} mt-2`}>{errorMessage}</div>
-      ) : (
-        ""
-      )} */}
       <div className="canvas-container">
         {Array.from({ length: totalCells }, (_, i) => (
           <div

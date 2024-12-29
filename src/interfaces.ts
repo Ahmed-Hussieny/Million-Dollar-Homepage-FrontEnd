@@ -13,7 +13,12 @@ export interface LogosData {
     description: string;
     rows: string;
     cols: string;
-    
+    response?: {
+      data: {
+        message: string;
+        errCode: number;
+      } | undefined;
+    } | undefined;
   };
   
   interface LogoPixel {

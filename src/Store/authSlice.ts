@@ -7,7 +7,7 @@ export const handleLogin = createAsyncThunk<UserData, LoginForm>(
   async (apiData: LoginForm, { rejectWithValue }) => {
     try {
       const { data } = await axios.post<UserData>(
-        `http://localhost:3000/auth/signin`,
+        `${import.meta.env.VITE_SERVER_LINK}/auth/signin`,
         apiData
       );
       return data;
