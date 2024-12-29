@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useEffect } from 'react';
+import {  useState, useEffect } from 'react';
 import { useAppDispatch } from '../../Store/store';
 import '../../App.css';
 import './PixelsPage.css';
@@ -9,7 +9,7 @@ import { setLoading } from '../../Store/globalSlice';
 const ShowPixels = () => {
   const totalCells = 10000;
   const dispatch = useAppDispatch();
-  const [numberOfPixels, setNumberOfPixels] = useState(0);
+  // const [numberOfPixels, setNumberOfPixels] = useState(0);
   const [gridImage, setGridImage] = useState<string | null>(null); // State to hold the generated image URL
   
   useEffect(() => {
@@ -44,7 +44,7 @@ const ShowPixels = () => {
 
             pixelsLoaded++;
             // Update the number of pixels after all are loaded
-            setNumberOfPixels(pixelsLoaded);
+            // setNumberOfPixels(pixelsLoaded);
             dispatch(changePixelNumber(pixelsLoaded * 10));
           };
         }
