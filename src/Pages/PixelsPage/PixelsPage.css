@@ -7,7 +7,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
 }
 .cell {
   width: 10px;
@@ -23,7 +23,7 @@
   .canvas-container {
     grid-template-columns: repeat(100, 8.5px); /* Reduced grid columns on smaller screens */
     grid-template-rows: repeat(100, 8.5px);    /* Reduced grid rows */
-    background-color: #45a049;
+    /* background-color: #45a049; */
   }
   .cell {
     width: 8.5px; /* Reduced cell size */
@@ -35,7 +35,7 @@
   .canvas-container {
     grid-template-columns: repeat(100, 7.5px); /* Further reduce grid on very small screens */
     grid-template-rows: repeat(100, 7.5px);
-    background-color: aqua;
+    /* background-color: aqua; */
   }
   .cell {
     width: 7.5px; /* Further reduce cell size */
@@ -49,7 +49,7 @@ div[style] {
   .canvas-container {
     grid-template-columns: repeat(100, 7.5px); /* Further reduce grid on very small screens */
     grid-template-rows: repeat(100, 7.5px);
-    background-color: blue;
+    /* background-color: blue; */
   }
   .cell {
     width: 7.5px; /* Further reduce cell size */
