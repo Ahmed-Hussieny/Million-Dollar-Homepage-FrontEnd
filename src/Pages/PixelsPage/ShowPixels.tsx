@@ -82,6 +82,7 @@ const ShowPixels = () => {
 
   return (
     <div className="canvas-container m-auto">
+      <div className='d-none'>
       {Array.from({ length: totalCells }, (_, i) => (
         <div
           key={i}
@@ -90,6 +91,7 @@ const ShowPixels = () => {
           title={`Cell ID: ${i}`}
         ></div>
       ))}
+      </div>
       <div>
       <button onClick={generateImage} className='btn btn-info'>Generate Image</button>
       </div>
