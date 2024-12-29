@@ -15,10 +15,10 @@ const Layout = () => {
   }, [toasting])
   return (  
     <>
-      {loading && <div className='loaderContainer position-absolute w-100 h-100 z-3'>
+      {/* {loading && <div className='loaderContainer position-absolute w-100 h-100 z-3'>
         <span className="loader"></span>
       </div>
-      }
+      } */}
       <div className='m-auto width1002 z-0'>
         <ToastContainer theme="colored" />
         <Navbar />
