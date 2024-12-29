@@ -8,7 +8,12 @@ export const handleLogin = createAsyncThunk<UserData, LoginForm>(
     try {
       const { data } = await axios.post<UserData>(
         `${import.meta.env.VITE_SERVER_LINK}/auth/signin`,
-        apiData
+        apiData,{
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+            },
+        }
       );
       return data;
     } catch (error: unknown) {

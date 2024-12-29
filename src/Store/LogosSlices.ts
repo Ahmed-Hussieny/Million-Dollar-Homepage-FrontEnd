@@ -3,7 +3,11 @@ import axios from "axios";
 import { LogoEntry, LogosData } from "../interfaces";
 
 export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/logo/getLogos`);
+    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/logo/getLogos`,{
+        headers: {
+            "ngrok-skip-browser-warning": "true",
+        }
+    });
     return data;
 });
 
@@ -12,6 +16,7 @@ export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos
         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addLogo`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                "ngrok-skip-browser-warning": "true",
             }
         });
         return data;
@@ -26,7 +31,8 @@ export const addUnPaindLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>
         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addUnpaidLogo`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                accesstoken: localStorage.getItem('token')
+                accesstoken: localStorage.getItem('token'),
+                "ngrok-skip-browser-warning": "true",
             }
         });
         return data;
@@ -41,7 +47,8 @@ export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: For
         const { data } = await axios.put(`${import.meta.env.VITE_SERVER_LINK}/logo/updateLogo/${id}`, apiData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                accesstoken: localStorage.getItem('token')
+                accesstoken: localStorage.getItem('token'),
+                "ngrok-skip-browser-warning": "true",
             }
         });
         return data;
@@ -56,7 +63,8 @@ export const deleteLogo = createAsyncThunk<LogoEntry, { id: string; }>("Logos/de
         const { data } = await axios.delete(`${import.meta.env.VITE_SERVER_LINK}/logo/deleteLogo/${id}`, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                accesstoken: localStorage.getItem('token')
+                accesstoken: localStorage.getItem('token'),
+                "ngrok-skip-browser-warning": "true",
             }
         });
         return data;
