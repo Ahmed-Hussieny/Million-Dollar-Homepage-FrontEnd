@@ -5,6 +5,7 @@ import '../../App.css'
 import { useSelector } from 'react-redux'
 import { toast, ToastContainer } from 'react-toastify'
 import { useEffect } from 'react'
+
 const Layout = () => {
   const { toasting } = useSelector((state: { globalData: { loading: boolean, toasting:{message: string, type: string} } }) => state.globalData)
 
