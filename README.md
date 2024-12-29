@@ -1,51 +1,60 @@
-# React + TypeScript + Vite
+# Million Dollar Homepage In Arabic
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 1. Project Overview
+ 
+  #### Project Name: 
+  Million Dollar Homepage In Arabic .
+   
+#### Description
+"Select Your Pixels" is an innovative platform where users can choose their own space (pixels) on a digital canvas to display their logo creatively.
 
-Currently, two official plugins are available:
+Key Features:
+Preview Before Payment: See how your logo will look on the selected pixels before committing to payment.
+Public Display: Once payment is completed, your logo becomes visible to everyone.
+Clickable Logo: Add a link to your logo so visitors can click and be redirected to your desired webpage or business.
+This tool is perfect for promoting your brand in a unique and interactive way while making it easy for others to discover and engage with your business or project.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### Tech Stack: 
 
-## Expanding the ESLint configuration
+- React 18
+- TypeScript
+- Vite
+- Redux toolkit
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-- Configure the top-level `parserOptions` property like this:
+#### Features
+- Interactive Pixel Selection
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- Users can select specific pixels on a digital canvas to customize the display area for their logo.
+Real-Time Logo Preview
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- Preview how your logo will look on the selected pixels before making a payment.
+Public Visibility
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- After payment, your logo becomes visible to all visitors on the platform.
+Clickable Logos
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
-# Million-Dollar-Homepage-FrontEnd
+- Add a hyperlink to your logo, allowing visitors to click and navigate to your website, portfolio, or business page.
+User-Friendly Interface
+
+- A simple and intuitive design ensures that users can quickly select, preview, and publish their logos without any hassle.
+Secure Payment System
+
+- A secure and seamless payment process to confirm your selections and make your logo live.
+Global Exposure
+
+- Your logo is visible to all visitors, maximizing reach and engagement with your brand.
+Editable Links
+
+- Update the link associated with your logo at any time to keep it relevant and up-to-date.
+Pixel Availability Check
+
+- Instantly see which pixels are available for selection, ensuring a smooth and transparent process.
+Cross-Promotion Potential
+
+- Showcase your brand alongside other businesses, driving curiosity and traffic through a unique collaborative environment.
+
+#### Configuration
+The app requires the following environment variables. Create a `.env` file in the root directory:
+    
+    VITE_API_BASE_URL=https://api.example.com VITE_ANOTHER_VARIABLE=your-value
