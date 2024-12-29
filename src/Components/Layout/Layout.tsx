@@ -19,7 +19,7 @@ const Layout = () => {
         <span className="loader"></span>
       </div>
       } */}
-      <div className='m-auto width1002 z-0'>
+      <div className='m-auto w-100 z-0'>
         <ToastContainer theme="colored" />
         <Navbar />
         <Outlet />
