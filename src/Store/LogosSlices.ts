@@ -11,6 +11,7 @@ export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () =
     return data;
 });
 
+
 export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addLogo", async ({ apiData }) => {
     try {
         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addLogo`, apiData, {
