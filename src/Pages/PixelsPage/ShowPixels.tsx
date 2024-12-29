@@ -43,7 +43,7 @@ const ShowPixels = () => {
   };
 
   return (
-        <div className="canvas-container">
+        <div className="canvas-container m-auto">
           {Array.from({ length: totalCells }, (_, i) => (
             <div
               key={i}

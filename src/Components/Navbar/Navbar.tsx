@@ -16,7 +16,7 @@ const Navbar = () => {
       <img className="w-75 pointer" onClick={() => navigate('/')} src={logo} alt="logo"/>
       </div>
       <div className='col-md-8  d-flex justify-content-around font12px'>
-        <div className="d-flex justify-content-between col-md-8">
+        <div className="d-flex justify-content-between align-items-center col-md-8">
         <p className="text-white"><span className='dot'></span> 1,000,000 بكسل</p>
         <p className="text-white"><span className='dot'></span> ٢  ريال سعودي لكل بكسل</p>
         <p className="text-white"><span className='dot'></span> امتلك قطعة من تاريخ الإنترنت! </p>

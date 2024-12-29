@@ -14,12 +14,6 @@
 .textMainColor{
   color: var(--main-color) !important;
 }
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  /* padding: 2rem; */
-  text-align: center;
-}
 .rtlDirection {
   direction: rtl !important;
 }
@@ -53,9 +47,6 @@
 }
 body {
   font-family: inter, sans-serif !important;
-  text-align: center;
-  box-sizing: border-box;
-  /* background-color: #000000 !important; */
 }
 @keyframes logo-spin {
   from {
