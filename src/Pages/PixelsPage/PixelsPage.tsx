@@ -97,7 +97,7 @@ const PixelsPage = () => {
     if (newLogo) {
       setLogos([...Logos, newLogo]);
     }
-  }, [newLogo])
+  }, [newLogo, Logos])
 
   useMemo(() => {
     renderTheGrid();
