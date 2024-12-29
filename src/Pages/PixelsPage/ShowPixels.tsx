@@ -1,4 +1,4 @@
-import {  useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch } from '../../Store/store';
 import '../../App.css';
 import './PixelsPage.css';
@@ -9,7 +9,6 @@ import { setLoading } from '../../Store/globalSlice';
 const ShowPixels = () => {
   const totalCells = 10000;
   const dispatch = useAppDispatch();
-  // const [numberOfPixels, setNumberOfPixels] = useState(0);
   const [gridImage, setGridImage] = useState<string | null>(null); // State to hold the generated image URL
   
   useEffect(() => {
@@ -20,7 +19,7 @@ const ShowPixels = () => {
     dispatch(setLoading(true));
     
     const { logos } = await dispatch(getLogos()).unwrap();
-    generateImage();
+    
     let pixelsLoaded = 0;  // Counter to track the number of loaded pixels
 
     logos?.forEach((entry: LogoEntry) => {
@@ -91,13 +90,16 @@ const ShowPixels = () => {
           title={`Cell ID: ${i}`}
         ></div>
       ))}
-      {/* <button onClick={generateImage}>Generate Image</button> */}
+      <div>
+      <button onClick={generateImage} className='btn btn-info'>Generate Image</button>
+      </div>
+      <div>
       {gridImage && (
         <div>
-          <h3>Generated Image</h3>
           <img src={gridImage} alt="Generated Grid" />
         </div>
       )}
+      </div>
     </div>
   );
 };
