@@ -33,7 +33,7 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
         x: percentX, // Percentage-based position
         y: percentY,
         visible: true,
-        text: `X: ${Number(percentX.toFixed(0)) * 10}, Y: ${Number(percentY.toFixed(0)) * 10}`, // Tooltip content
+        text: `X: ${(Number(percentX.toFixed(4))* 10).toFixed(0)}, Y: ${(Number(percentY.toFixed(4))* 10).toFixed(0)}`, // Tooltip content
       });
     }
   };
@@ -380,8 +380,8 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
         <div
           style={{
             position: 'absolute',
-            top: `${tooltip.y + 4}%`, // Use percentage for positioning
-            left: `${tooltip.x +6}%`,
+            top: `${tooltip.y - 2}%`, // Use percentage for positioning
+            left: `${tooltip.x - 4}%`,
             transform: 'translate(-50%, -100%)', // Center above the mouse
             background: 'rgba(0, 0, 0, 0.75)',
             color: 'white',
