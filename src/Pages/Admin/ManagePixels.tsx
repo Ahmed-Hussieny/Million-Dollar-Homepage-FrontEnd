@@ -10,11 +10,37 @@ import { setLoading, setToast } from '../../Store/globalSlice';
 const ManagePixels = () => {
     const [svgContent, setSvgContent] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null); const navigate = useNavigate()
+      const svgRef = useRef<SVGSVGElement | null>(null);
+      const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false, text: '' });
+    
     const dispatch = useAppDispatch();
     useEffect(() => {
         fetchData();
     }, []);
+const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+    if (svgRef.current) {
+      const svgRect = svgRef.current.getBoundingClientRect();
+      const mouseX = event.clientX - svgRect.left; // X relative to the SVG
+      const mouseY = event.clientY - svgRect.top;  // Y relative to the SVG
+      const svgWidth = svgRect.width;
+      const svgHeight = svgRect.height;
 
+      // Calculate percentages
+      const percentX = (mouseX / svgWidth) * 100; // Percentage X relative to the SVG
+      const percentY = (mouseY / svgHeight) * 100; // Percentage Y relative to the SVG
+
+      setTooltip({
+        x: percentX, // Percentage-based position
+        y: percentY,
+        visible: true,
+        text: `X: ${Number(percentX.toFixed(0)) * 10}, Y: ${Number(percentY.toFixed(0)) * 10}`, // Tooltip content
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({ ...tooltip, visible: false });
+  };
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
@@ -339,15 +365,35 @@ const ManagePixels = () => {
                 <button disabled={formik.values._id == ""} type='button' onClick={handleDeleteLogo} className='btn btn-danger w-25 p-0 '>حذف</button>
             </div>
 
-            <div className='w-100 border border-black'>
-                <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    viewBox='0 0 1000 1000'
-                    width='100%'
-                    height='100%'
-                    dangerouslySetInnerHTML={{ __html: svgContent! }}  // Set the SVG content
-                />
-            </div>
+            <div className="w-100 border border-black" style={{ position: 'relative' }}>
+      <svg
+        ref={svgRef}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1000 1000"
+        width="100%"
+        height="100%"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        dangerouslySetInnerHTML={{ __html: svgContent! }}
+      />
+      {tooltip.visible && (
+        <div
+          style={{
+            position: 'absolute',
+            top: `${tooltip.y + 4}%`, // Use percentage for positioning
+            left: `${tooltip.x +6}%`,
+            transform: 'translate(-50%, -100%)', // Center above the mouse
+            background: 'rgba(0, 0, 0, 0.75)',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            pointerEvents: 'none', // Prevent tooltip from interfering with mouse events
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
+    </div>
         </div>
     )
 }

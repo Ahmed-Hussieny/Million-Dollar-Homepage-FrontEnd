@@ -46,7 +46,7 @@ export default function Login() {
             setErrMessage(data.payload.message || "");
             localStorage.setItem('token', 'Bearer_' + data.payload.userToken);
             setAlertType('alert-success');
-            navigate('/ManageLogosWithoutPaying')
+            navigate('/ManagePixels')
         }
         setLoading(false);
     }
