@@ -1,5 +1,6 @@
 export interface LogosData {
     logos: LogoEntry[];
+    numberOfPixelsUsed: number;
   };
   
   export interface LogoEntry {
@@ -64,3 +65,70 @@ export interface AddLogoForm {
   logoLink: string,
   image: File | null
 };
+
+
+export const dummyData = [
+  {
+    "id": "pixel1",
+    "position": { "x": 0, "y": 0 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 98, "height": 26 },
+    "type": "image"
+  },
+  {
+    "id": "pixel1",
+    "position": { "x": 100, "y": 100 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 15, "height": 5 },
+    "type": "image"
+  },
+  {
+    "id": "pixel2",
+    "position": { "x": 120, "y": 50 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 150, "height": 80 },
+    "type": "text"
+  },
+  {
+    "id": "pixel3",
+    "position": { "x": 200, "y": 200 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 80, "height": 80 },
+    "type": "image"
+  },
+  {
+    "id": "pixel4",
+    "position": { "x": 300, "y": 100 },
+    "content": "Your Ad Here",
+    "size": { "width": 200, "height": 100 },
+    "type": "text"
+  },
+  {
+    "id": "pixel5",
+    "position": { "x": 500, "y": 300 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 120, "height": 120 },
+    "type": "image"
+  },
+  {
+    "id": "pixel6",
+    "position": { "x": 700, "y": 400 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 150, "height": 150 },
+    "type": "image"
+  },
+  {
+    "id": "pixel7",
+    "position": { "x": 850, "y": 500 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 60, "height": 60 },
+    "type": "image"
+  },
+  {
+    "id": "pixel8",
+    "position": { "x": 1000, "y": 600 },
+    "content": "../public/logo.jpeg",
+    "size": { "width": 180, "height": 80 },
+    "type": "text"
+  }
+]

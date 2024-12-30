@@ -1,81 +1,80 @@
+
 .canvas-container {
-  display: grid;
-  grid-template-columns: repeat(100, 10px); 
-  grid-template-rows: repeat(100, 10px); 
-  border: black solid 1px;
-  justify-content: center;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  overflow: auto;
-}
-.cell {
-  width: 10px;
-  height: 10px;
-  background-color: #ffffff;
-  border: rgb(238, 236, 236) solid 0.1px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-@media (max-width: 950px) {
-  .canvas-container {
-    grid-template-columns: repeat(100, 8.5px); /* Reduced grid columns on smaller screens */
-    grid-template-rows: repeat(100, 8.5px);    /* Reduced grid rows */
-    /* background-color: #45a049; */
+    display: grid;
+    grid-template-columns: repeat(100, 10px); 
+    grid-template-rows: repeat(100, 10px); 
+    border: black solid 1px;
+    justify-content: center;
   }
+  
   .cell {
-    width: 8.5px; /* Reduced cell size */
-    height: 8.5px;
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    border: rgb(238, 236, 236) solid 0.5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden !important;
   }
+  div[style] {
+    border: 0;
+  }
+  .cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .grid-container {
+    position: relative;
+    width: 1000px;
+    height: 1000px;
+  }
+  
+  .background-image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .highlight-box {
+    position: absolute;
+    border: 2px solid blue;
+    z-index: 2;
+    pointer-events: none;
+  }
+  /* Container that holds the SVG */
+.svg-container {
+  width: 100%;         /* Make the container take up the full width */
+  height: 100%;        /* Make the container take up the full height of the parent element */
+  display: flex;
+  justify-content: center; /* Center the SVG horizontally */
+  align-items: center;     /* Center the SVG vertically */
+  overflow: hidden;        /* Hide any overflow */
 }
 
-@media (max-width: 850px) {
-  .canvas-container {
-    grid-template-columns: repeat(100, 7.5px); /* Further reduce grid on very small screens */
-    grid-template-rows: repeat(100, 7.5px);
-    /* background-color: aqua; */
-  }
-  .cell {
-    width: 7.5px; /* Further reduce cell size */
-    height: 7.5px;
-  }
-}
-div[style] {
-  border: 0;
-}
-@media (max-width: 750px) {
-  .canvas-container {
-    grid-template-columns: repeat(100, 7.5px); /* Further reduce grid on very small screens */
-    grid-template-rows: repeat(100, 7.5px);
-    /* background-color: blue; */
-  }
-  .cell {
-    width: 7.5px; /* Further reduce cell size */
-    height: 7.5px;
-  }
+/* Class for the SVG content */
+.svg-content svg {
+  max-width: 100%;    /* Ensure SVG scales to the container width */
+  max-height: 100%;   /* Ensure SVG scales to the container height */
+  width: auto;        /* Keep aspect ratio intact */
+  height: auto;       /* Keep aspect ratio intact */
 }
 
-@media (max-width: 650px) {
-  .canvas-container {
-    grid-template-columns: repeat(100, 4px); /* Further reduce grid on very small screens */
-    grid-template-rows: repeat(100, 4px);
-    /* background-color: rgb(251, 255, 12); */
+  
+  /* Optional: Media Queries for smaller screens */
+  @media (max-width: 768px) {
+    .grid-container {
+      height: 80vh; /* Adjust the height for smaller screens */
+    }
   }
-  .cell {
-    width: 4px; /* Further reduce cell size */
-    height: 4px;
+  
+  @media (max-width: 480px) {
+    .grid-container {
+      height: 70vh; /* Further adjust for very small screens */
+    }
   }
-}
+  
 
-
-
-.cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 
   .upload-button {
     display: inline-block;

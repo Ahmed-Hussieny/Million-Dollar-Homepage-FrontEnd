@@ -173,3 +173,80 @@ footer {
     left: 100%;
   }
 }
+
+
+/*  */
+/* Add responsive font sizing */
+body {
+  font-size: 16px; /* Base font size */
+}
+
+.navbar {
+  font-size: 0.7rem !important; /* Default font size */
+}
+
+.navbar .btn span {
+  font-size: 0.8rem !important; /* Default button text si                                                                                                                ze */
+}
+
+.navbar .text-white {
+  font-size: 0.9rem; /* Default text size */
+}
+
+/* Make font size responsive */
+@media (max-width: 1200px) {
+  .navbar {
+    font-size: 0.7rem !important;
+  }
+  .dot{
+    width: 8px;
+    height: 8px;
+  }
+  .navbar .btn span {
+    font-size: 0.7rem !important;
+    
+  }
+
+  .navbar .text-white {
+    font-size: 0.65rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    font-size: 0.6rem !important;
+  }
+  .dot{
+    width: 6px;
+    height: 6px;
+  }
+  .navbar .btn span {
+    font-size: 0.6rem !important;
+  }
+
+  .navbar .text-white {
+    font-size: 0.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    font-size: 0.3rem !important;
+    
+  }
+  .dot{
+    width: 4px;
+    height: 4px;
+    margin-right: 10px;
+   
+  }
+  .navbar .btn span {
+    font-size: 0.5rem !important;
+  }
+
+  .navbar .text-white {
+    font-size: 0.35rem !important;
+    margin: 0px !important;
+    padding: 0px !important;
+  }
+}

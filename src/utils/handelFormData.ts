@@ -1,6 +1,6 @@
-import { AddLogoForm, SelectedCell } from "../interfaces";
+import { AddLogoForm } from "../interfaces";
 
-export const createFormData = (cellData: SelectedCell[],formik:AddLogoForm) => {
+export const createFormData = (formik:AddLogoForm) => {
     const apiData = new FormData();
     apiData.append("username", formik.username);
     apiData.append("email", formik.email);
@@ -11,12 +11,6 @@ export const createFormData = (cellData: SelectedCell[],formik:AddLogoForm) => {
     apiData.append("logoLink", formik.logoLink);
     if (formik.image) {
       apiData.append("image", formik.image);
-    }
-    if(cellData){
-        cellData.forEach((item, index) => {
-        apiData.append(`selectedCells[${index}][cellId]`, item.cellId.toString());
-        apiData.append(`selectedCells[${index}][canvasData]`, item.canvasData);
-        });
     }
     
     return apiData;

@@ -5,22 +5,22 @@ import '../../App.css'
 import { useSelector } from 'react-redux'
 import { toast, ToastContainer } from 'react-toastify'
 import { useEffect } from 'react'
-
 const Layout = () => {
-  const { toasting } = useSelector((state: { globalData: { loading: boolean, toasting:{message: string, type: string} } }) => state.globalData)
+  const { loading, toasting } = useSelector((state: { globalData: { loading: boolean, toasting:{message: string, type: string} } }) => state.globalData)
 
   useEffect(() => {
     if (toasting.message) {
       toast(toasting.message, { type: toasting.type as 'info' | 'success' | 'warning' | 'error' })
     }
+    
   }, [toasting])
   return (  
     <>
-      {/* {loading && <div className='loaderContainer position-absolute w-100 h-100 z-3'>
+      {loading && <div className='loaderContainer position-absolute w-100 h-100 z-3'>
         <span className="loader"></span>
       </div>
-      } */}
-      <div className='m-auto w-100 z-0'>
+      }
+      <div className='m-auto z-0'>
         <ToastContainer theme="colored" />
         <Navbar />
         <Outlet />

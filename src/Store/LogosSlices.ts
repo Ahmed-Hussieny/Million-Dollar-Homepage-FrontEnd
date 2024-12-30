@@ -3,7 +3,17 @@ import axios from "axios";
 import { LogoEntry, LogosData } from "../interfaces";
 
 export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/logo/getLogos`,{
+    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/pixel/getPixels`,{
+        headers: {
+            "ngrok-skip-browser-warning": "true",
+        }
+    });
+    
+    return data;
+});
+// getPixels
+export const getPixels = createAsyncThunk("Logos/getPixels", async () => {
+    const { data } = await axios.get(`${import.meta.env.VITE_SERVER_LINK}/pixel/getPixels`,{
         headers: {
             "ngrok-skip-browser-warning": "true",
         }
@@ -11,15 +21,15 @@ export const getLogos = createAsyncThunk<LogosData>("Logos/getLogos", async () =
     return data;
 });
 
-
-export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addLogo", async ({ apiData }) => {
+export const addPixel = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addPixel", async ({ apiData }) => {
     try {
-        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addLogo`, apiData, {
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/pixel/addPixel`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                "ngrok-skip-browser-warning": "true",
+                // "ngrok-skip-browser-warning": "true",
             }
         });
+        console.log(data)
         return data;
     }
     catch (error) {
@@ -27,19 +37,24 @@ export const addLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos
     }
 });
 
-export const addUnPaindLogo = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addUnPaindLogo", async ({ apiData }) => {
+export const addPixelWithoutPayment = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logos/addPixelWithoutPayment", async ({ apiData }, { rejectWithValue }) => {
     try {
-        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/logo/addUnpaidLogo`, apiData, {
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/pixel/addPixelWithoutPayment`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 accesstoken: localStorage.getItem('token'),
-                "ngrok-skip-browser-warning": "true",
+                // "ngrok-skip-browser-warning": "true",
             }
         });
         return data;
     }
     catch (error) {
-        return error;
+        console.log(error)
+        if (axios.isAxiosError(error)) {
+            return rejectWithValue(error.response?.data || error.message);
+        } else {
+            return rejectWithValue(error);
+        }
     }
 });
 
@@ -94,23 +109,22 @@ const LogoSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(getLogos.fulfilled, (state, { payload }) => {
             state.Logos = payload.logos;
-            state.numberOfPixelsUsed = (state.Logos.map((entry: LogoEntry) => entry.pixels.length).reduce((a, b) => a + b, 0)) * 10;
+            state.numberOfPixelsUsed = payload.numberOfPixelsUsed;
         });
         builder.addCase(getLogos.rejected, (state) => {
             state.Logos = [];
         });
 
-        builder.addCase(addLogo.fulfilled, (state, { payload }) => {
+        builder.addCase(addPixel.fulfilled, (state, { payload }) => {
             state.Logos.push(payload);
         });
-        builder.addCase(addLogo.rejected, (state) => {
+        builder.addCase(addPixel.rejected, (state) => {
             state.Logos = [];
         });
 
-        builder.addCase(addUnPaindLogo.fulfilled, (state, { payload }) => {
-            state.Logos.push(payload);
+        builder.addCase(addPixelWithoutPayment.fulfilled, () => {
         });
-        builder.addCase(addUnPaindLogo.rejected, (state) => {
+        builder.addCase(addPixelWithoutPayment.rejected, (state) => {
             state.Logos = [];
         });
         
@@ -120,6 +134,14 @@ const LogoSlice = createSlice({
         builder.addCase(updateLogo.rejected, (state) => {
             state.Logos = [];
         });
+
+        builder.addCase(getPixels.fulfilled, (state, { payload }) => {
+            state.Logos.push(payload);
+        });
+        builder.addCase(getPixels.rejected, (state) => {
+            state.Logos = [];
+        });
+
     }
 })
 
