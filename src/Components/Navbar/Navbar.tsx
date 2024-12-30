@@ -29,12 +29,12 @@ const Navbar = () => {
         </div>
       </div>
       <div className='w-100 mainColorBackground mt-2'>
-        <button className={`btn btn-sm me-2 ${isActive("/") ? "primary" : ""}`} onClick={() => navigate('/')} type="button"><span>الصفحة الرئيسية</span></button>
+        <button className={`btnCustom me-2 ${isActive("/") ? "primary" : ""}`} onClick={() => navigate('/')} type="button"><span>الصفحة الرئيسية</span></button>
         <span>|</span>
-        <button className={`btn btn-sm ${isActive("/buyPixel") ? "primary" : ""}`} onClick={() => navigate('/buyPixel')} type="button"><span>اشتري بيكسل</span></button><span>|</span>
-        <button className={`btn btn-sm ${isActive("/AboutUs") ? "primary" : ""}`} onClick={() => navigate('/AboutUs')} type="button"><span>من نحن</span></button><span>|</span>
-        <button className={`btn btn-sm ${isActive("/policyPage") ? "primary" : ""}`} onClick={() => navigate('/policyPage')} type="button"><span>سياسة الخصوصية</span></button><span>|</span>
-        <button className={`btn btn-sm ${isActive("/ContactUs") ? "primary" : ""}`} onClick={() => navigate('/ContactUs')} type="button"><span>تواصل معنا</span></button>
+        <button className={`btnCustom ${isActive("/buyPixel") ? "primary" : ""}`} onClick={() => navigate('/buyPixel')} type="button"><span>اشتري بيكسل</span></button><span>|</span>
+        <button className={`btnCustom ${isActive("/AboutUs") ? "primary" : ""}`} onClick={() => navigate('/AboutUs')} type="button"><span>من نحن</span></button><span>|</span>
+        <button className={`btnCustom ${isActive("/policyPage") ? "primary" : ""}`} onClick={() => navigate('/policyPage')} type="button"><span>سياسة الخصوصية</span></button><span>|</span>
+        <button className={`btnCustom ${isActive("/ContactUs") ? "primary" : ""}`} onClick={() => navigate('/ContactUs')} type="button"><span>تواصل معنا</span></button>
       </div>
       
     </nav>
