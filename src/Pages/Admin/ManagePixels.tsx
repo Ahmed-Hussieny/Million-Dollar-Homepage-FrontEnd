@@ -18,7 +18,7 @@ const ManagePixels = () => {
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
-        fetch('http://localhost:3000/pixel/generatePixelsImage', {
+        fetch('https://2d15-102-46-146-22.ngrok-free.app/pixel/generatePixelsImage', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

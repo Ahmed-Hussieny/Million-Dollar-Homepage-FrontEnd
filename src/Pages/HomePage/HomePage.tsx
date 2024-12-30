@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
     dispatch(setLoading(true));
     dispatch(getLogos()).unwrap();
 
-    fetch('http://localhost:3000/pixel/generatePixelsImage', {
+    fetch('https://2d15-102-46-146-22.ngrok-free.app/pixel/generatePixelsImage', {
       headers: {
         'ngrok-skip-browser-warning': 'true', // For ngrok tunnel if needed
       },
