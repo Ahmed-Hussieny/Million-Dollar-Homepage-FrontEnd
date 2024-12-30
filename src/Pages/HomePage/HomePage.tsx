@@ -10,7 +10,7 @@ const HomePage: React.FC = () => {
   // This function will handle the SVG content and update the image paths
   const updateImagePaths = (svg: string) => {
     const imagePathPattern = /href="\/uploads\/([^"]+)"/g;
-    const updatedSvg = svg.replace(imagePathPattern, (match, p1) => {
+    const updatedSvg = svg.replace(imagePathPattern, (_, p1) => {
       return `href="https://2d15-102-46-146-22.ngrok-free.app/uploads/${p1}"`; // Update the path to the correct server URL
     });
     return updatedSvg;
