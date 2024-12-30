@@ -83,7 +83,7 @@ export default function AddPixel() {
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean, response: { data: { message: string } } } };
+            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean,paymentLink:string, response: { data: { message: string } } } };
                         console.log(payload);
 
             // const { payload } = await dispatch(addPixel({ apiData })) as { payload: { response: { data: { message: string } }, success: boolean, paymentLink: string, data: { message: string } } }
