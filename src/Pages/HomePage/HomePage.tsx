@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
   const updateImagePaths = (svg: string) => {
     const imagePathPattern = /href="\/uploads\/([^"]+)"/g;
     const updatedSvg = svg.replace(imagePathPattern, (match, p1) => {
-      return `href="https://your-server-domain.com/uploads/${p1}"`; // Update the path to the correct server URL
+      return `href="https://2d15-102-46-146-22.ngrok-free.app/uploads/${p1}"`; // Update the path to the correct server URL
     });
     return updatedSvg;
   };
@@ -21,9 +21,7 @@ const HomePage: React.FC = () => {
     dispatch(getLogos()).unwrap();
 
     fetch('http://localhost:3000/pixel/generatePixelsImage', {
-      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true', // For ngrok tunnel if needed
       },
     })
@@ -53,6 +51,7 @@ const HomePage: React.FC = () => {
       ) : (
         <p>Loading...</p>
       )}
+      
     </div>
   );
 };
