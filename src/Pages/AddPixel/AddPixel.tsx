@@ -9,36 +9,35 @@ export default function AddPixel() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dispatch = useAppDispatch();
     const [urlPay, setUrlPay] = useState("");
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false, text: '' });
+    const svgRef = useRef<SVGSVGElement | null>(null);
+    const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false, text: '' });
 
     useEffect(() => {
         fetchData();
     }, []);
-const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
-    if (svgRef.current) {
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const mouseX = event.clientX - svgRect.left; // X relative to the SVG
-      const mouseY = event.clientY - svgRect.top;  // Y relative to the SVG
-      const svgWidth = svgRect.width;
-      const svgHeight = svgRect.height;
+    const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+        if (svgRef.current) {
+            const svgRect = svgRef.current.getBoundingClientRect();
+            const mouseX = event.clientX - svgRect.left;
+            const mouseY = event.clientY - svgRect.top;
+            const svgWidth = svgRect.width;
+            const svgHeight = svgRect.height;
 
-      // Calculate percentages
-      const percentX = (mouseX / svgWidth) * 100; // Percentage X relative to the SVG
-      const percentY = (mouseY / svgHeight) * 100; // Percentage Y relative to the SVG
+            const percentX = (mouseX / svgWidth) * 100;
+            const percentY = (mouseY / svgHeight) * 100;
 
-      setTooltip({
-        x: percentX, // Percentage-based position
-        y: percentY,
-        visible: true,
-        text: `X: ${(Number(percentX.toFixed(4))* 10).toFixed(0)}, Y: ${(Number(percentY.toFixed(4))* 10).toFixed(0)}`, // Tooltip content
-      });
-    }
-  };
+            setTooltip({
+                x: percentX,
+                y: percentY,
+                visible: true,
+                text: `X: ${(Number(percentX)).toFixed(0)}, Y: ${(Number(percentY)).toFixed(0)}`, // Tooltip content
+            });
+        }
+    };
 
-  const handleMouseLeave = () => {
-    setTooltip({ ...tooltip, visible: false });
-  };
+    const handleMouseLeave = () => {
+        setTooltip({ ...tooltip, visible: false });
+    };
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
@@ -49,9 +48,9 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then(response => response.text())  // Expecting the response as text
+            .then(response => response.text())
             .then(data => {
-                setSvgContent(data);  // Set the SVG content to state
+                setSvgContent(data);
             })
             .catch((error) => {
                 console.error('Error fetching SVG:', error);
@@ -68,15 +67,24 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
         title: Yup.string().required("العنوان مطلوب"),
         description: Yup.string().required("الوصف مطلوب"),
         row: Yup.number()
-            .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
-            .max(1000, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
+            .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
+            .max(100, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
             .required("الصفوف مطلوبة"),
         col: Yup.number()
-            .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 1000")
-            .max(1000, "يجب أن تكون الأعمدة رقمًا بين 0  و 1000")
+            .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
+            .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
             .required("الأعمدة مطلوبة"),
-        width: Yup.number().required("العرض مطلوب بالبكسل"),
-        height: Yup.number().required("العرض مطلوب بالبكسل"),
+        width: Yup.number().test(
+            "is-multiple-of-10",
+            " يجب أن يكون العرض مضاعفات العدد 10",
+            (value) => (value ?? 0) % 10 === 0
+        ).required("العرض مطلوب بالبكسل"),
+        height: Yup.number()
+            .test(
+                "is-multiple-of-10",
+                " يجب أن يكون الطول مضاعفات العدد 10",
+                (value) => (value ?? 0) % 10 === 0
+            ).required("الطول مطلوب بالبكسل"),
         url: Yup.string().required("رابط الشعار مطلوب"),
         image: Yup.mixed().required("الصورة مطلوبة"),
     });
@@ -101,18 +109,16 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
             apiData.append("email", val.email);
             apiData.append("title", val.title);
             apiData.append("description", val.description);
-            apiData.append("position", JSON.stringify({ x: val.row, y: val.col }));
+            apiData.append("position", JSON.stringify({ x: parseInt(val.row) * 10, y: parseInt(val.col) * 10 }));
             apiData.append("url", val.url);
             apiData.append("type", "image");
             apiData.append("size", JSON.stringify({ width: val.width, height: val.height }));
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean,paymentLink:string, response: { data: { message: string } } } };
-                        console.log(payload);
-
-            // const { payload } = await dispatch(addPixel({ apiData })) as { payload: { response: { data: { message: string } }, success: boolean, paymentLink: string, data: { message: string } } }
+            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean, paymentLink: string, response: { data: { message: string } } } };
             console.log(payload);
+
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد", type: "success" }));
                 resetForm();
@@ -122,7 +128,6 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
             } else {
                 console.log(payload.response.data.message);
                 dispatch(setToast({ message: payload.response.data.message, type: "error" }));
-                // setAlertType('alert-danger');
             }
             dispatch(setLoading(false));
         },
@@ -338,34 +343,34 @@ const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
                 <button className='btn btn-primary w-25 p-0' type='button' onClick={() => navigateToPay()} disabled={urlPay == ""}>شرائها</button>
             </div>
             <div className="w-100 border border-black" style={{ position: 'relative' }}>
-      <svg
-        ref={svgRef}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1000 1000"
-        width="100%"
-        height="100%"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        dangerouslySetInnerHTML={{ __html: svgContent! }}
-      />
-      {tooltip.visible && (
-        <div
-          style={{
-            position: 'absolute',
-            top: `${tooltip.y - 2}%`, // Use percentage for positioning
-            left: `${tooltip.x - 4}%`,
-            transform: 'translate(-50%, -100%)', // Center above the mouse
-            background: 'rgba(0, 0, 0, 0.75)',
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            pointerEvents: 'none', // Prevent tooltip from interfering with mouse events
-          }}
-        >
-          {tooltip.text}
-        </div>
-      )}
-    </div>
+                <svg
+                    ref={svgRef}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 1000 1000"
+                    width="100%"
+                    height="100%"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    dangerouslySetInnerHTML={{ __html: svgContent! }}
+                />
+                {tooltip.visible && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: `${tooltip.y - 2}%`,
+                            left: `${tooltip.x - 4}%`,
+                            transform: 'translate(-50%, -100%)',
+                            background: 'rgba(0, 0, 0, 0.75)',
+                            color: 'white',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        {tooltip.text}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

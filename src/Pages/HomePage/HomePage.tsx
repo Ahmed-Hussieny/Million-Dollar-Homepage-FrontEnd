@@ -4,8 +4,7 @@ import { setLoading } from '../../Store/globalSlice';
 import { getLogos } from '../../Store/LogosSlices';
 
 const HomePage: React.FC = () => {
-  const [svgContent, setSvgContent] = useState<string | null>(null); // To hold the SVG content as a string
-
+  const [svgContent, setSvgContent] = useState<string | null>(null); 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,7 +19,7 @@ const HomePage: React.FC = () => {
     })
       .then(response => response.text())
       .then(data => {
-        setSvgContent(data); // Set the SVG content to state
+        setSvgContent(data);
       })
       .catch((error) => {
         console.error('Error fetching SVG:', error);
@@ -29,7 +28,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-100 border border-black" style={{ position: 'relative' }}>
+    <div className="w-100 border border-black position-relative">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1000 1000"
