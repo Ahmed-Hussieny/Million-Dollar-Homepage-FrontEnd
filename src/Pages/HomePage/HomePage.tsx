@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch } from '../../Store/store';
 import { setLoading } from '../../Store/globalSlice';
-import { getLogos } from '../../Store/LogosSlices';
+// import { getLogos } from '../../Store/LogosSlices';
 import axios from 'axios';
 
 const HomePage: React.FC = () => {
