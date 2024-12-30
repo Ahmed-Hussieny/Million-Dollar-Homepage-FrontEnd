@@ -74,17 +74,8 @@ export default function AddPixel() {
             .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
             .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
             .required("الأعمدة مطلوبة"),
-        width: Yup.number().test(
-            "is-multiple-of-10",
-            " يجب أن يكون العرض مضاعفات العدد 10",
-            (value) => (value ?? 0) % 10 === 0
-        ).required("العرض مطلوب بالبكسل"),
-        height: Yup.number()
-            .test(
-                "is-multiple-of-10",
-                " يجب أن يكون الطول مضاعفات العدد 10",
-                (value) => (value ?? 0) % 10 === 0
-            ).required("الطول مطلوب بالبكسل"),
+        width: Yup.number().required("العرض مطلوب بالبكسل"),
+        height: Yup.number().required("الطول مطلوب بالبكسل"),
         url: Yup.string().required("رابط الشعار مطلوب"),
         image: Yup.mixed().required("الصورة مطلوبة"),
     });
@@ -112,7 +103,7 @@ export default function AddPixel() {
             apiData.append("position", JSON.stringify({ x: parseInt(val.row) * 10, y: parseInt(val.col) * 10 }));
             apiData.append("url", val.url);
             apiData.append("type", "image");
-            apiData.append("size", JSON.stringify({ width: val.width, height: val.height }));
+            apiData.append("size", JSON.stringify({ width: parseInt(val.width)*10, height: parseInt(val.height)*10 }));
             if (val.image) {
                 apiData.append("image", val.image);
             }
