@@ -17,7 +17,7 @@ export default function AddPixel() {
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
-        fetch('https://2d15-102-46-146-22.ngrok-free.app/pixel/generatePixelsImage', {
+        fetch('https://2d15-102-46-146-22.ngrok-free.app/gridImage/pixels_image.svg', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,6 +70,7 @@ export default function AddPixel() {
         },
         validationSchema,
         onSubmit: async (val) => {
+            dispatch(setLoading(true));
             const apiData = new FormData();
             apiData.append("username", val.username);
             apiData.append("email", val.email);
@@ -82,7 +83,10 @@ export default function AddPixel() {
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { response: { data: { message: string } }, success: boolean, paymentLink: string, data: { message: string } } }
+            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean, response: { data: { message: string } } } };
+                        console.log(payload);
+
+            // const { payload } = await dispatch(addPixel({ apiData })) as { payload: { response: { data: { message: string } }, success: boolean, paymentLink: string, data: { message: string } } }
             console.log(payload);
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد", type: "success" }));
@@ -95,6 +99,7 @@ export default function AddPixel() {
                 dispatch(setToast({ message: payload.response.data.message, type: "error" }));
                 // setAlertType('alert-danger');
             }
+            dispatch(setLoading(false));
         },
     });
 

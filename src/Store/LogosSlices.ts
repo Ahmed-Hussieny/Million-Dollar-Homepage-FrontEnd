@@ -115,8 +115,7 @@ const LogoSlice = createSlice({
             state.Logos = [];
         });
 
-        builder.addCase(addPixel.fulfilled, (state, { payload }) => {
-            state.Logos.push(payload);
+        builder.addCase(addPixel.fulfilled, () => {
         });
         builder.addCase(addPixel.rejected, (state) => {
             state.Logos = [];
