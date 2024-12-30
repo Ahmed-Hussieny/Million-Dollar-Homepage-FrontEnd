@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     dispatch(setLoading(true));
     dispatch(getLogos()).unwrap();
-    fetch('https://2d15-102-46-146-22.ngrok-free.app/pixel/generatePixelsImage', {
+    fetch('https://2d15-102-46-146-22.ngrok-free.app/gridImage/pixels_image.svg', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -33,6 +33,7 @@ const HomePage: React.FC = () => {
         viewBox='0 0 1000 1000'
         width='100%'
         height='100%'
+        // href='https://2d15-102-46-146-22.ngrok-free.app/gridImage/pixels_image.svg'
         dangerouslySetInnerHTML={{ __html: svgContent! }}  // Set the SVG content
         />
     </div>
