@@ -28,14 +28,15 @@ const HomePage: React.FC = () => {
 
   return (
     <div className='w-100 border border-black'>
-      <svg
+      {/* <svg
         xmlns='http://www.w3.org/2000/svg'
         href='https://2d15-102-46-146-22.ngrok-free.app/pixel/generatePixelsImage'
         viewBox='0 0 1000 1000'
         width='100%'
         height='100%'
         dangerouslySetInnerHTML={{ __html: svgContent! }}  // Set the SVG content
-        />
+        /> */}
+        <div dangerouslySetInnerHTML={{ __html: svgContent! }} />
     </div>
   );
 };
