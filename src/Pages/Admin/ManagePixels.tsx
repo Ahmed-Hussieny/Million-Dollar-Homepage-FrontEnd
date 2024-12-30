@@ -9,7 +9,7 @@ import { setLoading, setToast } from '../../Store/globalSlice';
 
 const ManagePixels = () => {
     const [svgContent, setSvgContent] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);    const navigate = useNavigate()
+    const fileInputRef = useRef<HTMLInputElement | null>(null); const navigate = useNavigate()
     const dispatch = useAppDispatch();
     useEffect(() => {
         fetchData();
@@ -18,7 +18,13 @@ const ManagePixels = () => {
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
-        fetch('http://localhost:3000/pixel/generatePixelsImage')
+        fetch('http://localhost:3000/pixel/generatePixelsImage', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then(response => response.text())
             .then(data => {
                 setSvgContent(data);
@@ -29,43 +35,43 @@ const ManagePixels = () => {
         dispatch(setLoading(false));
     };
     const validationSchema = Yup.object({
-            username: Yup.string()
-                .min(3, "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل")
-                .required("اسم المستخدم مطلوب"),
-            email: Yup.string()
-                .email("البريد الإلكتروني غير صالح")
-                .required("البريد الإلكتروني مطلوب"),
-            title: Yup.string().required("العنوان مطلوب"),
-            description: Yup.string().required("الوصف مطلوب"),
-            row: Yup.number()
-                .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
-                .max(1000, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
-                .required("الصفوف مطلوبة"),
-            col: Yup.number()
-                .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 1000")
-                .max(1000, "يجب أن تكون الأعمدة رقمًا بين 0  و 1000")
-                .required("الأعمدة مطلوبة"),
-            width: Yup.number().required("العرض مطلوب بالبكسل"),
-            height: Yup.number().required("العرض مطلوب بالبكسل"),
-            url: Yup.string().required("رابط الشعار مطلوب"),
-            image: Yup.mixed().required("الصورة مطلوبة"),
-        });
-        const formik = useFormik({
-            initialValues: {
-                _id: "",
-                username: "",
-                email: "",
-                title: "",
-                description: "",
-                row: "",
-                col: "",
-                url: "",
-                width: "",
-                height: "",
-                image: null
-            },
+        username: Yup.string()
+            .min(3, "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل")
+            .required("اسم المستخدم مطلوب"),
+        email: Yup.string()
+            .email("البريد الإلكتروني غير صالح")
+            .required("البريد الإلكتروني مطلوب"),
+        title: Yup.string().required("العنوان مطلوب"),
+        description: Yup.string().required("الوصف مطلوب"),
+        row: Yup.number()
+            .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
+            .max(1000, "يجب أن تكون الصفوف رقمًا بين 0 و 1000")
+            .required("الصفوف مطلوبة"),
+        col: Yup.number()
+            .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 1000")
+            .max(1000, "يجب أن تكون الأعمدة رقمًا بين 0  و 1000")
+            .required("الأعمدة مطلوبة"),
+        width: Yup.number().required("العرض مطلوب بالبكسل"),
+        height: Yup.number().required("العرض مطلوب بالبكسل"),
+        url: Yup.string().required("رابط الشعار مطلوب"),
+        image: Yup.mixed().required("الصورة مطلوبة"),
+    });
+    const formik = useFormik({
+        initialValues: {
+            _id: "",
+            username: "",
+            email: "",
+            title: "",
+            description: "",
+            row: "",
+            col: "",
+            url: "",
+            width: "",
+            height: "",
+            image: null
+        },
         validationSchema,
-        onSubmit: async(val) => {
+        onSubmit: async (val) => {
             const apiData = new FormData();
             apiData.append("username", val.username);
             apiData.append("email", val.email);
@@ -79,7 +85,7 @@ const ManagePixels = () => {
                 apiData.append("image", val.image);
             }
             console.log(val)
-            const {payload}  = await dispatch(addPixelWithoutPayment({ apiData })) as { payload: { success: boolean, response: { data: { message: string } } } };
+            const { payload } = await dispatch(addPixelWithoutPayment({ apiData })) as { payload: { success: boolean, response: { data: { message: string } } } };
             console.log(payload);
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح ", type: "success" }));
@@ -134,7 +140,7 @@ const ManagePixels = () => {
         // dispatch(setLoading(false));
     };
 
-    const resetForm= ()=>{
+    const resetForm = () => {
         formik.values._id = "";
         formik.values.username = "";
         formik.values.email = "";
@@ -145,7 +151,7 @@ const ManagePixels = () => {
         formik.values.url = "";
         formik.values.image = null;
         if (fileInputRef.current) {
-            fileInputRef.current.value = ""; 
+            fileInputRef.current.value = "";
         }
     }
 
@@ -164,8 +170,8 @@ const ManagePixels = () => {
                 <label className="form-label text-warning fw-bold mt-1">
                     قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
                     <span className="text-danger">
-                    ( تكلفة البكسل ٢ ريال)</span>
-          <br />
+                        ( تكلفة البكسل ٢ ريال)</span>
+                    <br />
                     <span className="text-danger"> (  لقبول طلبكم الرجاء وضع اللوقو باللغة العربية فقط )</span>
                 </label>
                 <div className="row gy-3 my-3">

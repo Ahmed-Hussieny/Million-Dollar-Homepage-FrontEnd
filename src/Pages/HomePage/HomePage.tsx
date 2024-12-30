@@ -9,7 +9,13 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     dispatch(setLoading(true));
     dispatch(getLogos()).unwrap();
-    fetch('http://localhost:3000/pixel/generatePixelsImage')
+    fetch('http://localhost:3000/pixel/generatePixelsImage', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        "ngrok-skip-browser-warning": "true",
+      },
+    }) 
       .then(response => response.text()) 
       .then(data => {
         setSvgContent(data);  // Set the SVG content to state

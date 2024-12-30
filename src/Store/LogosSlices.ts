@@ -26,7 +26,7 @@ export const addPixel = createAsyncThunk<LogoEntry, { apiData: FormData }>("Logo
         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_LINK}/pixel/addPixel`, apiData, {
             headers: {
                 "Content-Type": "multipart/form-data",
-                // "ngrok-skip-browser-warning": "true",
+                "ngrok-skip-browser-warning": "true",
             }
         });
         console.log(data)
@@ -43,7 +43,7 @@ export const addPixelWithoutPayment = createAsyncThunk<LogoEntry, { apiData: For
             headers: {
                 "Content-Type": "multipart/form-data",
                 accesstoken: localStorage.getItem('token'),
-                // "ngrok-skip-browser-warning": "true",
+                "ngrok-skip-browser-warning": "true",
             }
         });
         return data;

@@ -17,7 +17,13 @@ export default function AddPixel() {
     const fetchData = async () => {
         dispatch(setLoading(true));
         await dispatch(getLogos()).unwrap();
-        fetch('http://localhost:3000/pixel/generatePixelsImage')
+        fetch('http://localhost:3000/pixel/generatePixelsImage', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then(response => response.text())  // Expecting the response as text
             .then(data => {
                 setSvgContent(data);  // Set the SVG content to state
@@ -76,7 +82,7 @@ export default function AddPixel() {
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            const { payload } = await dispatch(addPixel({ apiData })) as { payload: {response:{data:{message: string}}, success: boolean, paymentLink: string, data: { message: string } } }
+            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { response: { data: { message: string } }, success: boolean, paymentLink: string, data: { message: string } } }
             console.log(payload);
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد", type: "success" }));
@@ -126,8 +132,8 @@ export default function AddPixel() {
                 <label className="form-label text-warning fw-bold mt-1">
                     قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
                     <span className="text-danger">
-                    ( تكلفة البكسل ٢ ريال)</span>
-          <br />
+                        ( تكلفة البكسل ٢ ريال)</span>
+                    <br />
                     <span className="text-danger"> (  لقبول طلبكم الرجاء وضع اللوقو باللغة العربية فقط )</span>
                 </label>
                 <div className="row gy-3 my-3">
