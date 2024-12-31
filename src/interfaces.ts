@@ -66,7 +66,16 @@ export interface AddLogoForm {
   image: File | null
 };
 
-
+export interface Pixel {
+  username: string;
+  email: string;
+  title: string;
+  description: string;
+  position: { x: number; y: number };
+  url: string;
+  image: File | null;
+  size: { width: number; height: number };
+}
 export const dummyData = [
   {
     "id": "pixel1",

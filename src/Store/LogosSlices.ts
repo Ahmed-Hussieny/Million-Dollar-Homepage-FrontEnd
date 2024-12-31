@@ -58,9 +58,9 @@ export const addPixelWithoutPayment = createAsyncThunk<LogoEntry, { apiData: For
     }
 });
 
-export const updateLogo = createAsyncThunk<LogoEntry, { id: string; apiData: FormData }>("Logos/updateLogo", async ({ id, apiData }) => {
+export const updateLogo = createAsyncThunk<LogoEntry, { url: string; apiData: FormData }>("Logos/updateLogo", async ({ url, apiData }) => {
     try {
-        const { data } = await axios.put(`${import.meta.env.VITE_SERVER_LINK}/logo/updateLogo/${id}`, apiData, {
+        const { data } = await axios.put(`${import.meta.env.VITE_SERVER_LINK}/pixel/updatePixel?url=${url}`, apiData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 accesstoken: localStorage.getItem('token'),
@@ -127,8 +127,7 @@ const LogoSlice = createSlice({
             state.Logos = [];
         });
         
-        builder.addCase(updateLogo.fulfilled, (state, { payload }) => {
-            state.Logos.push(payload);
+        builder.addCase(updateLogo.fulfilled, () => {
         });
         builder.addCase(updateLogo.rejected, (state) => {
             state.Logos = [];
@@ -140,7 +139,6 @@ const LogoSlice = createSlice({
         builder.addCase(getPixels.rejected, (state) => {
             state.Logos = [];
         });
-
     }
 })
 

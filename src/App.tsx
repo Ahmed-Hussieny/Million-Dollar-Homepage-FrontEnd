@@ -11,6 +11,7 @@ import PolicyPage from './Pages/Policy/PolicyPage'
 import HomePage from './Pages/HomePage/HomePage'
 import AddPixel from './Pages/AddPixel/AddPixel'
 import ManagePixels from './Pages/Admin/ManagePixels'
+import UpdatePixels from './Pages/UpdatePixels/UpdatePixels'
 
 const App = () => {
   const router = createHashRouter([
@@ -22,7 +23,7 @@ const App = () => {
       {path:"/AboutUs", element:<AboutUs/>},
       {path: "policyPage", element: <PolicyPage />},
       {path:"/login", element:<Login/>},
-      // {path:"/ManageLogosWithoutPaying", element:<ManageLogosWithoutPaying/>},
+      {path:"/UpdatePixels", element:<UpdatePixels/>},
       {path:"/ManagePixels", element:<ManagePixels/>}
     ],},
     
