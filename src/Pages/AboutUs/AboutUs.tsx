@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import '../../App.css'
-import { getLogos } from '../../Store/LogosSlices';
+import { getPixels } from '../../Store/LogosSlices';
 import { useAppDispatch } from '../../Store/store';
 import { setLoading } from '../../Store/globalSlice';
 const AboutUs = () => {
@@ -10,7 +10,7 @@ const AboutUs = () => {
     });
     const fetchData = async () => {
       dispatch(setLoading(true));
-      await dispatch(getLogos()).unwrap();
+      await dispatch(getPixels()).unwrap();
       dispatch(setLoading(false));
     };
     return (

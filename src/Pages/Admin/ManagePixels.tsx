@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useAppDispatch } from '../../Store/store';
-import { addPixelWithoutPayment, getLogos } from '../../Store/LogosSlices';
+import { addPixelWithoutPayment, getGridImage, getPixels } from '../../Store/LogosSlices';
 import { useNavigate } from 'react-router-dom';
-// import { createFormData } from '../../utils/handelFormData';
 import { setLoading, setToast } from '../../Store/globalSlice';
 
 const ManagePixels = () => {
@@ -16,24 +15,30 @@ const ManagePixels = () => {
     const dispatch = useAppDispatch();
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [dispatch]);
+
+    const fetchData = async () => {
+        dispatch(setLoading(true));
+        await dispatch(getPixels()).unwrap();
+        const data = await dispatch(getGridImage()).unwrap();
+        setSvgContent(data);
+        dispatch(setLoading(false));
+    };
     const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
         if (svgRef.current) {
             const svgRect = svgRef.current.getBoundingClientRect();
-            const mouseX = event.clientX - svgRect.left; // X relative to the SVG
-            const mouseY = event.clientY - svgRect.top;  // Y relative to the SVG
+            const mouseX = event.clientX - svgRect.left;
+            const mouseY = event.clientY - svgRect.top;
             const svgWidth = svgRect.width;
             const svgHeight = svgRect.height;
-
-            // Calculate percentages
-            const percentX = (mouseX / svgWidth) * 100; // Percentage X relative to the SVG
-            const percentY = (mouseY / svgHeight) * 100; // Percentage Y relative to the SVG
+            const percentX = (mouseX / svgWidth) * 100; 
+            const percentY = (mouseY / svgHeight) * 100;
 
             setTooltip({
-                x: percentX, // Percentage-based position
+                x: percentX,
                 y: percentY,
                 visible: true,
-                text: `X: ${(percentX).toFixed(0)}, Y: ${(percentY).toFixed(0)}`, // Tooltip content
+                text: ` (${(Math.floor(percentX))}:العمود )  (الصف :${(Math.floor(percentY)).toFixed(0)})`,
             });
         }
     };
@@ -41,25 +46,7 @@ const ManagePixels = () => {
     const handleMouseLeave = () => {
         setTooltip({ ...tooltip, visible: false });
     };
-    const fetchData = async () => {
-        dispatch(setLoading(true));
-        await dispatch(getLogos()).unwrap();
-        fetch('https://2d15-102-46-146-22.ngrok-free.app/gridImage/pixels_image.svg', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then(response => response.text())
-            .then(data => {
-                setSvgContent(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching SVG:', error);
-            });
-        dispatch(setLoading(false));
-    };
+
     const validationSchema = Yup.object({
         username: Yup.string()
             .min(3, "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل")
@@ -69,14 +56,13 @@ const ManagePixels = () => {
             .required("البريد الإلكتروني مطلوب"),
         title: Yup.string().required("العنوان مطلوب"),
         description: Yup.string().required("الوصف مطلوب"),
-        row: Yup.number()
+        row: Yup.number().min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
+        .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
+        .required("الأعمدة مطلوبة"),
+        col: Yup.number()
             .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
             .max(100, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
             .required("الصفوف مطلوبة"),
-        col: Yup.number()
-            .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
-            .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
-            .required("الأعمدة مطلوبة"),
         width: Yup.number().required("العرض مطلوب بالبكسل"),
         height: Yup.number().required("الطول مطلوب بالبكسل"),
         url: Yup.string().required("رابط الشعار مطلوب"),
@@ -110,16 +96,14 @@ const ManagePixels = () => {
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            console.log(val)
             const { payload } = await dispatch(addPixelWithoutPayment({ apiData })) as { payload: { success: boolean,message:string, response: { data: { message: string } } } };
-            console.log(payload);
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح ", type: "success" }));
                 resetForm();
-            } else if(payload?.message){
-                dispatch(setToast({ message: payload?.message, type: "error" }));
+            } else if(payload?.message === "wrong token"){
+                dispatch(setToast({ message: " يرجي تسجيل الدخول مرة اخري", type: "error" }));
+                navigate('/login');
             } else {
-                console.log(payload.response.data.message);
                 dispatch(setToast({ message: payload.response.data.message, type: "error" }));
             }
             fetchData();
@@ -149,7 +133,6 @@ const ManagePixels = () => {
     }
 
     const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.files?.[0]);
         const file = event.target.files?.[0];
         if (!file) {
             dispatch(setToast({ message: "الرجاء تحديد الوقو", type: "error" }));
@@ -163,7 +146,8 @@ const ManagePixels = () => {
                 <label className="form-label text-warning fw-bold mt-1">
                     قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
                     <span className="text-danger">
-                        ( تكلفة البكسل ٢ ريال)</span>
+                    (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )
+                    </span>
                     <br />
                     <span className="text-danger"> (  لقبول طلبكم الرجاء وضع اللوقو باللغة العربية فقط )</span>
                 </label>
@@ -245,7 +229,7 @@ const ManagePixels = () => {
                             type="number"
                             name="row"
                             className="form-control"
-                            placeholder="الصف"
+                            placeholder="العمود"
                             required
                             value={formik.values.row}
                             onChange={formik.handleChange}
@@ -263,7 +247,7 @@ const ManagePixels = () => {
                             type="number"
                             name="col"
                             className="form-control"
-                            placeholder="العمود"
+                            placeholder=" الصف"
                             required
                             value={formik.values.col}
                             onChange={formik.handleChange}
@@ -332,7 +316,7 @@ const ManagePixels = () => {
                 <button type='button' onClick={() => navigate('/UpdatePixels')} className='btn btn-danger w-25 p-0 '>تعديل او حذف</button>
             </div>
 
-            <div className="w-100 border border-black" style={{ position: 'relative' }}>
+            <div className="w-100 border border-black position-relative">
                 <svg
                     ref={svgRef}
                     xmlns="http://www.w3.org/2000/svg"
@@ -347,14 +331,14 @@ const ManagePixels = () => {
                     <div
                         style={{
                             position: 'absolute',
-                            top: `${tooltip.y - 2}%`, // Use percentage for positioning
-                            left: `${tooltip.x - 4}%`,
-                            transform: 'translate(-50%, -100%)', // Center above the mouse
+                            top: `${tooltip.y - 2}%`,
+                            left: `${tooltip.x}%`,
+                            transform: 'translate(-50%, -100%)', 
                             background: 'rgba(0, 0, 0, 0.75)',
                             color: 'white',
                             padding: '4px 8px',
                             borderRadius: '4px',
-                            pointerEvents: 'none', // Prevent tooltip from interfering with mouse events
+                            pointerEvents: 'none',
                         }}
                     >
                         {tooltip.text}

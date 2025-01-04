@@ -3,18 +3,29 @@ import { useAppDispatch } from "../../Store/store";
 import { setLoading, setToast } from "../../Store/globalSlice";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
-import { addPixel, getLogos } from "../../Store/LogosSlices";
+import { addPixel, getGridImage, getGridTempImage, getPixels } from "../../Store/LogosSlices";
+import { AddPixelPayload } from "../../interfaces";
+
 export default function AddPixel() {
-    const [svgContent, setSvgContent] = useState<string | null>(null);  // To hold the SVG content as a string
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const dispatch = useAppDispatch();
-    const [urlPay, setUrlPay] = useState("");
     const svgRef = useRef<SVGSVGElement | null>(null);
+
+    const [svgContent, setSvgContent] = useState<string | null>(null);
+    const [urlPay, setUrlPay] = useState("");
     const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false, text: '' });
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
+        const fetchData = async () => {
+            dispatch(setLoading(true));
+            await dispatch(getPixels()).unwrap();
+            const data = await dispatch(getGridImage()).unwrap();
+            setSvgContent(data);
+            dispatch(setLoading(false));
+        };
         fetchData();
-    }, []);
+    }, [dispatch]);
+
     const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
         if (svgRef.current) {
             const svgRect = svgRef.current.getBoundingClientRect();
@@ -22,15 +33,13 @@ export default function AddPixel() {
             const mouseY = event.clientY - svgRect.top;
             const svgWidth = svgRect.width;
             const svgHeight = svgRect.height;
-
             const percentX = (mouseX / svgWidth) * 100;
             const percentY = (mouseY / svgHeight) * 100;
-
             setTooltip({
                 x: percentX,
                 y: percentY,
                 visible: true,
-                text: `X: ${(Number(percentX)).toFixed(0)}, Y: ${(Number(percentY)).toFixed(0)}`, // Tooltip content
+                text: ` (${(Math.floor(percentX))}:العمود )  (الصف :${(Math.floor(percentY)).toFixed(0)})`, // Tooltip content
             });
         }
     };
@@ -38,25 +47,7 @@ export default function AddPixel() {
     const handleMouseLeave = () => {
         setTooltip({ ...tooltip, visible: false });
     };
-    const fetchData = async () => {
-        dispatch(setLoading(true));
-        await dispatch(getLogos()).unwrap();
-        fetch('https://2d15-102-46-146-22.ngrok-free.app/gridImage/pixels_image.svg', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then(response => response.text())
-            .then(data => {
-                setSvgContent(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching SVG:', error);
-            });
-        dispatch(setLoading(false));
-    };
+
     const validationSchema = Yup.object({
         username: Yup.string()
             .min(3, "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل")
@@ -66,19 +57,23 @@ export default function AddPixel() {
             .required("البريد الإلكتروني مطلوب"),
         title: Yup.string().required("العنوان مطلوب"),
         description: Yup.string().required("الوصف مطلوب"),
-        row: Yup.number()
+        row: Yup.number().min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
+            .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
+            .required("الأعمدة مطلوبة"),
+        col: Yup.number()
             .min(0, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
             .max(100, "يجب أن تكون الصفوف رقمًا بين 0 و 100")
             .required("الصفوف مطلوبة"),
-        col: Yup.number()
-            .min(0, "يجب أن تكون الأعمدة رقمًا بين 0 و 100")
-            .max(100, "يجب أن تكون الأعمدة رقمًا بين 0  و 100")
-            .required("الأعمدة مطلوبة"),
-        width: Yup.number().required("العرض مطلوب بالبكسل"),
-        height: Yup.number().required("الطول مطلوب بالبكسل"),
+        width: Yup.number().
+        min(1,' يجب ان يكون العرض بين 1 و 100').
+        max(100, ' يجب ان يكون العرض بين 1 و 100').required("العرض مطلوب بالبكسل"),
+        height: Yup.number().
+        min(1,' يجب ان يكون الطول بين 1 و 100').
+        max(100, ' يجب ان يكون الطول بين 1 و 100').required("الطول مطلوب بالبكسل"),
         url: Yup.string().required("رابط الشعار مطلوب"),
         image: Yup.mixed().required("الصورة مطلوبة"),
     });
+
     const formik = useFormik({
         initialValues: {
             username: "",
@@ -103,12 +98,11 @@ export default function AddPixel() {
             apiData.append("position", JSON.stringify({ x: parseInt(val.row) * 10, y: parseInt(val.col) * 10 }));
             apiData.append("url", val.url);
             apiData.append("type", "image");
-            apiData.append("size", JSON.stringify({ width: parseInt(val.width)*10, height: parseInt(val.height)*10 }));
+            apiData.append("size", JSON.stringify({ width: parseInt(val.width) * 10, height: parseInt(val.height) * 10 }));
             if (val.image) {
                 apiData.append("image", val.image);
             }
-            const { payload } = await dispatch(addPixel({ apiData })) as { payload: { success: boolean, paymentLink: string, response: { data: { message: string } } } };
-            console.log(payload);
+            const { payload } = await dispatch(addPixel({ apiData })) as { payload: AddPixelPayload};
 
             if (payload.success) {
                 dispatch(setToast({ message: "تم إضافة الشعار بنجاح الرجاء التوجه للشراء للتاكيد", type: "success" }));
@@ -117,9 +111,11 @@ export default function AddPixel() {
                     setUrlPay(payload.paymentLink);
                 }
             } else {
-                console.log(payload.response.data.message);
-                dispatch(setToast({ message: payload.response.data.message, type: "error" }));
+                const errorMessage = payload.response?.data?.message || "An error occurred";
+                dispatch(setToast({ message: errorMessage, type: "error" }));
             }
+            const data = await dispatch(getGridTempImage()).unwrap();
+            setSvgContent(data);
             dispatch(setLoading(false));
         },
     });
@@ -129,7 +125,6 @@ export default function AddPixel() {
     };
 
     const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.files?.[0]);
         const file = event.target.files?.[0];
         if (!file) {
             dispatch(setToast({ message: "الرجاء تحديد الوقو", type: "error" }));
@@ -158,7 +153,9 @@ export default function AddPixel() {
                 <label className="form-label text-warning fw-bold mt-1">
                     قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
                     <span className="text-danger">
-                        ( تكلفة البكسل ٢ ريال)</span>
+                        (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )
+
+                    </span>
                     <br />
                     <span className="text-danger"> (  لقبول طلبكم الرجاء وضع اللوقو باللغة العربية فقط )</span>
                 </label>
@@ -240,7 +237,7 @@ export default function AddPixel() {
                             type="number"
                             name="row"
                             className="form-control"
-                            placeholder="الصف"
+                            placeholder="العمود"
                             required
                             value={formik.values.row}
                             onChange={formik.handleChange}
@@ -251,14 +248,13 @@ export default function AddPixel() {
                                 <p className='m-0'>{formik.errors.row}</p>
                             </div>
                             : ""}
-
                     </div>
                     <div className="col-md-6">
                         <input
                             type="number"
                             name="col"
                             className="form-control"
-                            placeholder="العمود"
+                            placeholder="الصف"
                             required
                             value={formik.values.col}
                             onChange={formik.handleChange}
@@ -333,7 +329,7 @@ export default function AddPixel() {
                 </div>
                 <button className='btn btn-primary w-25 p-0' type='button' onClick={() => navigateToPay()} disabled={urlPay == ""}>شرائها</button>
             </div>
-            <div className="w-100 border border-black" style={{ position: 'relative' }}>
+            <div className="w-100 border border-black position-relative">
                 <svg
                     ref={svgRef}
                     xmlns="http://www.w3.org/2000/svg"
@@ -349,7 +345,7 @@ export default function AddPixel() {
                         style={{
                             position: 'absolute',
                             top: `${tooltip.y - 2}%`,
-                            left: `${tooltip.x - 4}%`,
+                            left: `${tooltip.x}%`,
                             transform: 'translate(-50%, -100%)',
                             background: 'rgba(0, 0, 0, 0.75)',
                             color: 'white',

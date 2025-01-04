@@ -1,4 +1,17 @@
+import { useEffect } from "react"
+import { getPixels } from "../../Store/LogosSlices";
+import { useAppDispatch } from "../../Store/store";
+import { setLoading } from "../../Store/globalSlice";
+
 export default function PolicyPage() {
+    const dispatch = useAppDispatch();
+
+    useEffect(()=>{
+        dispatch(setLoading(true));
+        dispatch(getPixels()).unwrap();
+        dispatch(setLoading(false));
+    }, [dispatch])
+
     return (
         <div className="about-us-page vh-100 bg-light d-flex rtlDirection">
             {/* Content Section */}

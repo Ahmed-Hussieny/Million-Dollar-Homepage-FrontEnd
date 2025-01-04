@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getLogos } from "../../Store/LogosSlices";
+import { getPixels } from "../../Store/LogosSlices";
 import { useAppDispatch } from "../../Store/store";
 import '../../App.css'
 import { setLoading } from "../../Store/globalSlice";
@@ -19,7 +19,7 @@ const ContactUs = () => {
   });
   const fetchData = async () => {
     dispatch(setLoading(true));
-    await dispatch(getLogos()).unwrap();
+    await dispatch(getPixels()).unwrap();
     dispatch(setLoading(false));
   };
   return (

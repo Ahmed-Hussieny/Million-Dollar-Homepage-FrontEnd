@@ -272,7 +272,8 @@
 //                 <label className="form-label text-warning fw-bold mt-1">
 //                     قم بتحديد البكسلات التي تود شرائها واكمل البيانات لاكمال عمليه الشراء<br />
 //                     <span className="text-danger">
-//                         (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )</span>
+//                         (  يحتوي كل مربع على ١٠ بكسلات ، تكلفة المربع ٢٠ ريال لكل بكسل ٢ ريال فقط )
+// </span>
 //                 </label>
 //                 <div className="row my-3">
 //                     <div className="col-md-6">
